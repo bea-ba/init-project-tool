@@ -87,8 +87,8 @@ const SleepTracker = () => {
         <Card className="p-8 mb-8 bg-gradient-to-br from-card to-primary/10">
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center animate-pulse">
-                <Moon className="w-16 h-16 text-primary" />
+              <div className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center animate-breathe">
+                <Moon className="w-16 h-16 text-primary animate-float" />
               </div>
             </div>
 
@@ -105,12 +105,12 @@ const SleepTracker = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center">
-                <p className="text-2xl font-semibold mb-2">Ready to Sleep?</p>
-                <p className="text-muted-foreground">
-                  Start tracking to monitor your sleep quality
-                </p>
-              </div>
+            <div className="text-center">
+              <p className="text-2xl font-semibold mb-2">Ready for Restful Sleep?</p>
+              <p className="text-muted-foreground">
+                Begin tracking to discover your sleep patterns
+              </p>
+            </div>
             )}
           </div>
         </Card>
@@ -144,14 +144,14 @@ const SleepTracker = () => {
               Stop Tracking
             </Button>
           ) : (
-            <Button
-              size="lg"
-              onClick={handleStartSleep}
-              className="w-full max-w-xs h-16 text-lg"
-            >
-              <Moon className="w-6 h-6 mr-2" />
-              Start Sleep Tracking
-            </Button>
+          <Button
+            size="lg"
+            onClick={handleStartSleep}
+            className="w-full max-w-xs h-16 text-lg"
+          >
+            <Moon className="w-6 h-6 mr-2" />
+            Begin Sleep Journey
+          </Button>
           )}
         </div>
       </div>

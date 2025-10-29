@@ -1,10 +1,10 @@
 import { SleepSession, Alarm, SleepNote, UserSettings } from '@/types/sleep';
 
 const STORAGE_KEYS = {
-  SLEEP_SESSIONS: 'sleepzy_sessions',
-  ALARMS: 'sleepzy_alarms',
-  NOTES: 'sleepzy_notes',
-  SETTINGS: 'sleepzy_settings',
+  SLEEP_SESSIONS: 'dreamwell_sessions',
+  ALARMS: 'dreamwell_alarms',
+  NOTES: 'dreamwell_notes',
+  SETTINGS: 'dreamwell_settings',
 };
 
 export const storage = {

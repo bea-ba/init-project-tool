@@ -47,10 +47,10 @@ export const DesktopSidebar = () => {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border min-h-screen sticky top-0">
       <div className="p-6">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Sleepzy
+        <h1 className="text-2xl font-bold font-heading bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          Dreamwell
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Sleep Better, Live Better</p>
+        <p className="text-sm text-muted-foreground mt-1">Rest Deeply, Live Fully</p>
       </div>
       
       <nav className="flex-1 px-3">

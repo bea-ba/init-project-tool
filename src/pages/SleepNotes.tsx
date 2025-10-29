@@ -74,10 +74,10 @@ const SleepNotes = () => {
         </div>
 
         <Card className="p-6 mb-6">
-          <Label htmlFor="notes">How did you sleep?</Label>
+          <Label htmlFor="notes">How was your rest?</Label>
           <Textarea
             id="notes"
-            placeholder="Write about your sleep experience, dreams, or anything that might have affected your rest..."
+            placeholder="Reflect on your sleep experience, dreams, or moments that influenced your rest..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="mt-2 min-h-[120px]"

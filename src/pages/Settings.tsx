@@ -238,9 +238,9 @@ const Settings = () => {
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">About</h2>
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p>Sleepzy v1.0.0</p>
-            <p>Built with ❤️ for better sleep</p>
-            <p>© 2025 Sleepzy. All rights reserved.</p>
+            <p>Dreamwell v1.0.0</p>
+            <p>Crafted with intention for restorative rest</p>
+            <p>© 2025 Dreamwell. All rights reserved.</p>
           </div>
         </Card>
       </div>

@@ -8,72 +8,72 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 240 25% 95%;
-    --foreground: 248 20% 15%;
+    --background: 220 25% 97%;
+    --foreground: 225 20% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 248 20% 15%;
+    --card-foreground: 225 20% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 248 20% 15%;
-    --primary: 249 58% 60%;
+    --popover-foreground: 225 20% 20%;
+    --primary: 230 65% 68%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 211 70% 60%;
+    --secondary: 265 55% 75%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 240 10% 85%;
-    --muted-foreground: 248 10% 45%;
-    --accent: 45 95% 62%;
-    --accent-foreground: 248 20% 15%;
+    --muted: 220 15% 92%;
+    --muted-foreground: 225 10% 50%;
+    --accent: 180 45% 70%;
+    --accent-foreground: 225 20% 15%;
     --destructive: 0 70% 65%;
     --destructive-foreground: 0 0% 100%;
-    --success: 174 62% 55%;
+    --success: 165 55% 65%;
     --success-foreground: 0 0% 100%;
-    --warning: 25 95% 65%;
-    --warning-foreground: 248 20% 15%;
-    --border: 240 10% 85%;
-    --input: 240 10% 85%;
-    --ring: 249 58% 60%;
-    --radius: 1rem;
+    --warning: 35 85% 70%;
+    --warning-foreground: 225 20% 15%;
+    --border: 220 15% 88%;
+    --input: 220 15% 90%;
+    --ring: 230 65% 68%;
+    --radius: 1.25rem;
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 248 20% 15%;
-    --sidebar-primary: 249 58% 60%;
+    --sidebar-foreground: 225 20% 20%;
+    --sidebar-primary: 230 65% 68%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 25% 95%;
-    --sidebar-accent-foreground: 248 20% 15%;
-    --sidebar-border: 240 10% 85%;
-    --sidebar-ring: 249 58% 60%;
+    --sidebar-accent: 220 25% 97%;
+    --sidebar-accent-foreground: 225 20% 20%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 230 65% 68%;
   }
 
   .dark {
-    --background: 248 30% 8%;
-    --foreground: 240 20% 95%;
-    --card: 248 25% 12%;
-    --card-foreground: 240 20% 95%;
-    --popover: 248 25% 12%;
-    --popover-foreground: 240 20% 95%;
-    --primary: 249 58% 60%;
+    --background: 225 35% 10%;
+    --foreground: 220 20% 95%;
+    --card: 225 30% 14%;
+    --card-foreground: 220 20% 95%;
+    --popover: 225 30% 14%;
+    --popover-foreground: 220 20% 95%;
+    --primary: 230 60% 65%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 211 70% 60%;
+    --secondary: 265 50% 70%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 248 15% 18%;
-    --muted-foreground: 240 10% 60%;
-    --accent: 45 95% 62%;
-    --accent-foreground: 248 20% 8%;
+    --muted: 225 20% 20%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 180 40% 60%;
+    --accent-foreground: 225 30% 10%;
     --destructive: 0 70% 65%;
     --destructive-foreground: 0 0% 100%;
-    --success: 174 62% 55%;
+    --success: 165 50% 60%;
     --success-foreground: 0 0% 100%;
-    --warning: 25 95% 65%;
-    --warning-foreground: 248 20% 8%;
-    --border: 248 15% 18%;
-    --input: 248 15% 18%;
-    --ring: 249 58% 60%;
-    --sidebar-background: 248 25% 12%;
-    --sidebar-foreground: 240 20% 95%;
-    --sidebar-primary: 249 58% 60%;
+    --warning: 35 80% 65%;
+    --warning-foreground: 225 30% 10%;
+    --border: 225 20% 22%;
+    --input: 225 20% 20%;
+    --ring: 230 60% 65%;
+    --sidebar-background: 225 30% 14%;
+    --sidebar-foreground: 220 20% 95%;
+    --sidebar-primary: 230 60% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 248 30% 8%;
-    --sidebar-accent-foreground: 240 20% 95%;
-    --sidebar-border: 248 15% 18%;
-    --sidebar-ring: 249 58% 60%;
+    --sidebar-accent: 225 35% 10%;
+    --sidebar-accent-foreground: 220 20% 95%;
+    --sidebar-border: 225 20% 22%;
+    --sidebar-ring: 230 60% 65%;
   }
 }
 
@@ -83,6 +83,61 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  /* Dreamwell calming animations */
+  .animate-breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes breathe {
+    0%, 100% { 
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { 
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% { 
+      transform: translateY(0px);
+    }
+    50% { 
+      transform: translateY(-10px);
+    }
+  }
+  
+  /* Smooth transitions for all interactive elements */
+  * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }

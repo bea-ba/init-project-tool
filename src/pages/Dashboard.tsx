@@ -36,13 +36,13 @@ const Dashboard = () => {
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
-            Sleepzy
+          <h1 className="text-4xl font-bold font-heading bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-2">
+            Dreamwell
           </h1>
           <p className="text-muted-foreground">
             {latestSession 
               ? `Last night: ${formatDuration(latestSession.duration)}`
-              : 'Track your first night of sleep'}
+              : 'Begin your journey to restorative rest'}
           </p>
         </div>
 
@@ -126,7 +126,7 @@ const Dashboard = () => {
             className="h-20 text-lg"
           >
             <Moon className="w-6 h-6 mr-2" />
-            Start Sleep Tracking
+            Begin Sleep Tracking
           </Button>
           <Button
             size="lg"

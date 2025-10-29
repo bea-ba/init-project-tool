@@ -58,7 +58,7 @@ const Premium = () => {
             <Crown className="w-16 h-16 mx-auto mb-4 text-warning" />
             <h2 className="text-2xl font-bold mb-2">You're Premium!</h2>
             <p className="text-muted-foreground mb-6">
-              Enjoy all the features Sleepzy has to offer
+              Enjoy all the features Dreamwell has to offer
             </p>
             <Button onClick={() => navigate('/')}>
               Back to Dashboard
@@ -80,11 +80,11 @@ const Premium = () => {
         </div>
 
         {/* Hero */}
-        <Card className="p-8 mb-8 text-center bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
-          <Sparkles className="w-16 h-16 mx-auto mb-4 text-primary" />
-          <h2 className="text-3xl font-bold mb-3">Unlock Your Best Sleep Yet</h2>
+        <Card className="p-8 mb-8 text-center bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 animate-fade-in">
+          <Sparkles className="w-16 h-16 mx-auto mb-4 text-primary animate-float" />
+          <h2 className="text-3xl font-bold font-heading mb-3">Elevate Your Rest</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get unlimited access to advanced sleep tracking, all sounds, and personalized insights
+            Access unlimited insights, soothing sounds, and personalized guidance for truly restorative sleep
           </p>
         </Card>
 
