@@ -64,8 +64,8 @@ const SleepNotes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-background pb-20 md:pb-6">
+      <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Sleep Note</h1>
           <Button variant="ghost" onClick={() => navigate('/')}>

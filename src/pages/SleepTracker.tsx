@@ -75,8 +75,8 @@ const SleepTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 pb-20 md:pb-6">
+      <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Sleep Tracker</h1>
           <Button variant="ghost" onClick={() => navigate('/')}>

@@ -32,8 +32,8 @@ const Dashboard = () => {
     }));
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-background pb-20 md:pb-6">
+      <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
