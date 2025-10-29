@@ -15,4 +15,14 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Separate service worker from main bundle
+        manualChunks: undefined,
+      },
+    },
+  },
+  // Ensure service worker and manifest are copied to dist
+  publicDir: 'public',
 }));
