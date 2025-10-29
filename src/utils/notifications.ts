@@ -1,5 +1,6 @@
 import { Alarm, UserSettings } from '@/types/sleep';
 import { toast } from 'sonner';
+import { audioPlayer } from './audioPlayer';
 
 /**
  * Request notification permission from the user
@@ -150,46 +151,35 @@ export const triggerAlarm = (alarm: Alarm): void => {
 };
 
 /**
- * Play alarm sound using HTML5 Audio
+ * Play alarm sound using audioPlayer service
  */
 const playAlarmSound = (): void => {
   try {
-    // Create audio element for alarm sound
-    const audio = new Audio();
-
-    // Use a data URI for a simple beep sound (since we don't have audio files yet)
-    // This is a simple sine wave tone
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 800; // Frequency in Hz
-    gainNode.gain.value = 0.3; // Volume
-
-    oscillator.start();
-
-    // Beep pattern: on for 0.5s, off for 0.5s, repeat 3 times
-    let beepCount = 0;
-    const beepInterval = setInterval(() => {
-      if (beepCount >= 3) {
-        oscillator.stop();
-        clearInterval(beepInterval);
-        return;
-      }
-
-      if (beepCount % 2 === 0) {
-        gainNode.gain.value = 0.3;
-      } else {
-        gainNode.gain.value = 0;
-      }
-
-      beepCount++;
-    }, 500);
+    // Use the audioPlayer service to play a gentle wake alarm sound
+    audioPlayer.playAlarm('gentle-wake');
   } catch (error) {
     console.error('Failed to play alarm sound:', error);
+
+    // Fallback to simple beep if audioPlayer fails
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800;
+      gainNode.gain.value = 0.3;
+
+      oscillator.start();
+
+      setTimeout(() => {
+        oscillator.stop();
+      }, 2000);
+    } catch (fallbackError) {
+      console.error('Failed to play fallback alarm sound:', fallbackError);
+    }
   }
 };
 
