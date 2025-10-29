@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Moon, Square } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateSleepPhases, calculateSleepQuality } from '@/utils/sleepCalculations';
+import { generateSecureId } from '@/utils/encryption';
 
 const SleepTracker = () => {
   const { activeSleep, startSleep, stopSleep, addSession } = useSleep();
@@ -20,7 +21,7 @@ const SleepTracker = () => {
 
   const handleStartSleep = () => {
     const newSession = {
-      id: Date.now().toString(),
+      id: generateSecureId(),
       startTime: new Date(),
       endTime: null,
       duration: 0,

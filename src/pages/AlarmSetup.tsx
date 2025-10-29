@@ -9,6 +9,8 @@ import { Slider } from '@/components/ui/slider';
 import { useNavigate } from 'react-router-dom';
 import { AlarmClock, Bell, Vibrate } from 'lucide-react';
 import { toast } from 'sonner';
+import { generateSecureId } from '@/utils/encryption';
+import { sanitizeAlarmLabel } from '@/utils/validation';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -24,10 +26,30 @@ const AlarmSetup = () => {
   const [vibration, setVibration] = useState(true);
 
   const handleSave = () => {
+    // Validate time format
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (!timeRegex.test(time)) {
+      toast.error('Invalid time format');
+      return;
+    }
+
+    // Sanitize and validate label
+    const sanitizedLabel = sanitizeAlarmLabel(label);
+    if (sanitizedLabel.length > 100) {
+      toast.error('Label is too long. Maximum 100 characters allowed.');
+      return;
+    }
+
+    // Validate at least one day is selected
+    if (!days.some(day => day)) {
+      toast.error('Please select at least one day');
+      return;
+    }
+
     const alarm = {
-      id: Date.now().toString(),
+      id: generateSecureId(),
       time,
-      label: label || 'Alarm',
+      label: sanitizedLabel || 'Alarm',
       days,
       enabled: true,
       soundId: 'gentle-wake',
@@ -81,7 +103,11 @@ const AlarmSetup = () => {
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             className="mt-2"
+            maxLength={100}
           />
+          <p className="text-xs text-muted-foreground mt-2">
+            {label.length}/100 characters
+          </p>
         </Card>
 
         <Card className="p-6 mb-6">
