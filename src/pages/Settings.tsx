@@ -6,14 +6,28 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { useNavigate } from 'react-router-dom';
-import { Moon, Sun, Bell, Download, Trash2, Shield } from 'lucide-react';
-import { useState } from 'react';
+import { Moon, Sun, Bell, Download, Upload, Trash2, Shield, FileText } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { toast } from 'sonner';
+import { downloadDataAsJSON, downloadSessionsAsCSV, handleFileImport } from '@/utils/dataExport';
+import { promptForNotificationPermission } from '@/utils/notifications';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const Settings = () => {
   const { settings, updateSettings } = useSleep();
   const navigate = useNavigate();
   const [sleepGoalHours, setSleepGoalHours] = useState([settings.sleepGoal / 60]);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleThemeChange = (theme: 'light' | 'dark' | 'auto') => {
     updateSettings({ ...settings, theme });
@@ -35,16 +49,63 @@ const Settings = () => {
     });
   };
 
-  const handleExportData = () => {
-    toast.success('Data exported successfully');
+  const handleExportJSON = () => {
+    try {
+      downloadDataAsJSON();
+      toast.success('Data exported successfully as JSON');
+    } catch (error) {
+      toast.error('Failed to export data');
+      console.error('Export error:', error);
+    }
+  };
+
+  const handleExportCSV = () => {
+    try {
+      downloadSessionsAsCSV();
+      toast.success('Sleep sessions exported as CSV');
+    } catch (error) {
+      toast.error('Failed to export data');
+      console.error('Export error:', error);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const result = await handleFileImport(file);
+
+      if (result.success) {
+        toast.success(result.message);
+        // Reload to reflect imported data
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error('Failed to import data');
+      console.error('Import error:', error);
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleClearData = () => {
-    if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-      localStorage.clear();
-      toast.success('All data cleared');
-      window.location.reload();
-    }
+    setShowClearDialog(true);
+  };
+
+  const confirmClearData = () => {
+    localStorage.clear();
+    toast.success('All data cleared');
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   return (
@@ -60,7 +121,7 @@ const Settings = () => {
         {/* Sleep Goals */}
         <Card className="p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Sleep Goals</h2>
-          
+
           <div className="space-y-6">
             <div>
               <Label>Target Sleep Duration: {sleepGoalHours[0].toFixed(1)} hours</Label>
@@ -109,7 +170,7 @@ const Settings = () => {
         {/* Appearance */}
         <Card className="p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Appearance</h2>
-          
+
           <div className="grid grid-cols-3 gap-4">
             <button
               onClick={() => handleThemeChange('light')}
@@ -122,7 +183,7 @@ const Settings = () => {
               <Sun className="w-6 h-6 mx-auto mb-2" />
               <p className="text-sm font-medium">Light</p>
             </button>
-            
+
             <button
               onClick={() => handleThemeChange('dark')}
               className={`p-4 rounded-lg border-2 transition-all ${
@@ -134,7 +195,7 @@ const Settings = () => {
               <Moon className="w-6 h-6 mx-auto mb-2" />
               <p className="text-sm font-medium">Dark</p>
             </button>
-            
+
             <button
               onClick={() => handleThemeChange('auto')}
               className={`p-4 rounded-lg border-2 transition-all ${
@@ -155,8 +216,22 @@ const Settings = () => {
         {/* Notifications */}
         <Card className="p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Notifications</h2>
-          
+
           <div className="space-y-4">
+            <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+              <p className="text-sm mb-3">
+                Enable browser notifications to receive alarms and bedtime reminders even when Dreamwell is not open.
+              </p>
+              <Button
+                onClick={promptForNotificationPermission}
+                variant="outline"
+                className="w-full"
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                Enable Push Notifications
+              </Button>
+            </div>
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Bell className="w-5 h-5 text-primary" />
@@ -204,16 +279,43 @@ const Settings = () => {
         {/* Data & Privacy */}
         <Card className="p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Data & Privacy</h2>
-          
+
           <div className="space-y-3">
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 justify-start"
+                onClick={handleExportJSON}
+              >
+                <Download className="w-5 h-5 mr-3" />
+                Export JSON
+              </Button>
+
+              <Button
+                variant="outline"
+                className="flex-1 justify-start"
+                onClick={handleExportCSV}
+              >
+                <FileText className="w-5 h-5 mr-3" />
+                Export CSV
+              </Button>
+            </div>
+
             <Button
               variant="outline"
               className="w-full justify-start"
-              onClick={handleExportData}
+              onClick={handleImportClick}
             >
-              <Download className="w-5 h-5 mr-3" />
-              Export All Data
+              <Upload className="w-5 h-5 mr-3" />
+              Import Data
             </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileChange}
+              className="hidden"
+            />
 
             <Button
               variant="outline"
@@ -243,6 +345,30 @@ const Settings = () => {
             <p>© 2025 Dreamwell. All rights reserved.</p>
           </div>
         </Card>
+
+        {/* Clear Data Confirmation Dialog */}
+        <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete all your
+                sleep data, alarms, notes, and settings from this device.
+                <br /><br />
+                <strong>Consider exporting your data first!</strong>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmClearData}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete Everything
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

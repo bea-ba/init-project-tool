@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SleepProvider } from "./contexts/SleepContext";
 import { Navigation, DesktopSidebar } from "./components/layout/Navigation";
+import { NotificationService } from "./components/NotificationService";
 import Dashboard from "./pages/Dashboard";
 import SleepTracker from "./pages/SleepTracker";
 import AlarmSetup from "./pages/AlarmSetup";
@@ -24,6 +25,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <NotificationService />
         <BrowserRouter>
           <div className="flex">
             <DesktopSidebar />
