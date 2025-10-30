@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Activity, Coffee, Dumbbell, Brain, Smartphone } from 'lucide-react';
@@ -36,7 +37,7 @@ const getConfidenceBadge = (confidence: string) => {
   );
 };
 
-export const CorrelationInsights = ({ insights }: CorrelationInsightsProps) => {
+export const CorrelationInsights = memo(({ insights }: CorrelationInsightsProps) => {
   if (insights.length === 0) {
     return (
       <Card className="p-6">
@@ -96,4 +97,4 @@ export const CorrelationInsights = ({ insights }: CorrelationInsightsProps) => {
       </div>
     </Card>
   );
-};
+});

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card } from '@/components/ui/card';
 import { WeekdayPattern } from '@/utils/analytics';
@@ -8,7 +9,7 @@ interface WeekdayPatternsChartProps {
   height?: number;
 }
 
-export const WeekdayPatternsChart = ({
+export const WeekdayPatternsChart = memo(({
   patterns,
   title,
   height = 300,
@@ -96,4 +97,4 @@ export const WeekdayPatternsChart = ({
       </div>
     </Card>
   );
-};
+});

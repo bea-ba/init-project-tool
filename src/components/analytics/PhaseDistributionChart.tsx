@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card } from '@/components/ui/card';
 
@@ -20,7 +21,7 @@ const COLORS = {
   Awake: '#f59e0b',
 };
 
-export const PhaseDistributionChart = ({
+export const PhaseDistributionChart = memo(({
   data,
   title,
   height = 300,
@@ -94,4 +95,4 @@ export const PhaseDistributionChart = ({
       </div>
     </Card>
   );
-};
+});

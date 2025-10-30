@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, Clock, Target, TrendingUp, Calendar } from 'lucide-react';
@@ -36,7 +37,7 @@ const getCategoryIcon = (category: string) => {
   }
 };
 
-export const RecommendationsCard = ({ recommendations }: RecommendationsCardProps) => {
+export const RecommendationsCard = memo(({ recommendations }: RecommendationsCardProps) => {
   if (recommendations.length === 0) {
     return (
       <Card className="p-6">
@@ -87,4 +88,4 @@ export const RecommendationsCard = ({ recommendations }: RecommendationsCardProp
       </div>
     </Card>
   );
-};
+});

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useSleep } from '@/contexts/SleepContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,15 +54,39 @@ const Insights = () => {
 
   const randomTip = SLEEP_TIPS[Math.floor(Math.random() * SLEEP_TIPS.length)];
 
-  // Analytics data
-  const qualityTrend7d = getSleepQualityTrend(completedSessions, 7);
-  const qualityTrend30d = getSleepQualityTrend(completedSessions, 30);
-  const durationTrend7d = getSleepDurationTrend(completedSessions, 7);
-  const durationTrend30d = getSleepDurationTrend(completedSessions, 30);
-  const phasesDistribution = getAveragePhasesDistribution(completedSessions);
-  const correlations = analyzeActivityCorrelations(completedSessions, notes);
-  const recommendations = generateRecommendations(completedSessions, notes, settings.sleepGoal);
-  const weekdayPatterns = getWeekdayPatterns(completedSessions);
+  // Analytics data - memoized for performance
+  const qualityTrend7d = useMemo(
+    () => getSleepQualityTrend(completedSessions, 7),
+    [completedSessions]
+  );
+  const qualityTrend30d = useMemo(
+    () => getSleepQualityTrend(completedSessions, 30),
+    [completedSessions]
+  );
+  const durationTrend7d = useMemo(
+    () => getSleepDurationTrend(completedSessions, 7),
+    [completedSessions]
+  );
+  const durationTrend30d = useMemo(
+    () => getSleepDurationTrend(completedSessions, 30),
+    [completedSessions]
+  );
+  const phasesDistribution = useMemo(
+    () => getAveragePhasesDistribution(completedSessions),
+    [completedSessions]
+  );
+  const correlations = useMemo(
+    () => analyzeActivityCorrelations(completedSessions, notes),
+    [completedSessions, notes]
+  );
+  const recommendations = useMemo(
+    () => generateRecommendations(completedSessions, notes, settings.sleepGoal),
+    [completedSessions, notes, settings.sleepGoal]
+  );
+  const weekdayPatterns = useMemo(
+    () => getWeekdayPatterns(completedSessions),
+    [completedSessions]
+  );
 
   if (completedSessions.length === 0) {
     return (

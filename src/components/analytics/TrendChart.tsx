@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Card } from '@/components/ui/card';
 import { TrendDataPoint } from '@/utils/analytics';
@@ -11,7 +12,7 @@ interface TrendChartProps {
   height?: number;
 }
 
-export const TrendChart = ({
+export const TrendChart = memo(({
   data,
   title,
   color = '#6366f1',
@@ -78,4 +79,4 @@ export const TrendChart = ({
       </ResponsiveContainer>
     </Card>
   );
-};
+});
