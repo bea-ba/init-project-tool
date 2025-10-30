@@ -12,6 +12,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DashboardSkeleton } from "./components/ui/loading-skeletons";
 import { registerServiceWorker } from "./utils/serviceWorker";
 import { SkipLinks } from "./components/a11y/SkipLinks";
+import "./i18n/config"; // Initialize i18n
 
 // Eager load critical pages
 import Dashboard from "./pages/Dashboard";
