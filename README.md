@@ -59,6 +59,44 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Framer Motion (animations)
+- Recharts (data visualization)
+- Howler.js (audio playback)
+- Playwright (E2E testing)
+
+## Testing
+
+This project includes comprehensive testing:
+
+### Unit Tests (Vitest)
+```bash
+npm test              # Run unit tests
+npm run test:ui       # Run with UI
+npm run test:coverage # Generate coverage report
+```
+
+### E2E Tests (Playwright)
+```bash
+npm run test:e2e         # Run all E2E tests
+npm run test:e2e:ui      # Run with interactive UI
+npm run test:e2e:headed  # Run with visible browser
+npm run test:e2e:debug   # Debug tests step by step
+npm run test:e2e:report  # View test report
+```
+
+See [e2e/README.md](./e2e/README.md) for detailed E2E testing documentation.
+
+### Test Coverage
+
+- **78 unit tests** covering utils, components, and hooks
+- **60+ E2E tests** covering:
+  - Sleep tracking flows
+  - Navigation and routing
+  - Alarm setup
+  - Sleep notes
+  - WCAG 2.1 AA accessibility
+  - PWA offline functionality
+  - Complete user journeys
 
 ## How can I deploy this project?
 
