@@ -49,31 +49,31 @@ All colors MUST be HSL.
     --card-foreground: 220 20% 95%;
     --popover: 225 30% 14%;
     --popover-foreground: 220 20% 95%;
-    --primary: 230 60% 65%;
+    --primary: 230 65% 70%; /* Enhanced for better contrast */
     --primary-foreground: 0 0% 100%;
-    --secondary: 265 50% 70%;
+    --secondary: 265 55% 75%; /* Enhanced for better contrast */
     --secondary-foreground: 0 0% 100%;
     --muted: 225 20% 20%;
-    --muted-foreground: 220 15% 65%;
-    --accent: 180 40% 60%;
+    --muted-foreground: 220 15% 72%; /* Enhanced from 65% to 72% for WCAG AA compliance */
+    --accent: 180 45% 65%; /* Enhanced for better contrast */
     --accent-foreground: 225 30% 10%;
     --destructive: 0 70% 65%;
     --destructive-foreground: 0 0% 100%;
-    --success: 165 50% 60%;
+    --success: 165 55% 65%; /* Enhanced for better contrast */
     --success-foreground: 0 0% 100%;
-    --warning: 35 80% 65%;
+    --warning: 35 85% 70%; /* Enhanced for better contrast */
     --warning-foreground: 225 30% 10%;
-    --border: 225 20% 22%;
-    --input: 225 20% 20%;
-    --ring: 230 60% 65%;
+    --border: 225 20% 26%; /* Enhanced from 22% to 26% for better visibility */
+    --input: 225 20% 22%;
+    --ring: 230 65% 70%; /* Enhanced for better contrast */
     --sidebar-background: 225 30% 14%;
     --sidebar-foreground: 220 20% 95%;
-    --sidebar-primary: 230 60% 65%;
+    --sidebar-primary: 230 65% 70%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 225 35% 10%;
     --sidebar-accent-foreground: 220 20% 95%;
-    --sidebar-border: 225 20% 22%;
-    --sidebar-ring: 230 60% 65%;
+    --sidebar-border: 225 20% 26%;
+    --sidebar-ring: 230 65% 70%;
   }
 }
 
@@ -92,15 +92,67 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  /* Accessibility utilities */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .skip-links {
+    position: relative;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+    z-index: 100;
+    font-weight: 600;
+    transition: top 0.2s;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
+  /* Focus visible styles for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* High contrast focus for better visibility */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
   /* Dreamwell calming animations */
   .animate-breathe {
     animation: breathe 4s ease-in-out infinite;
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
-  
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }

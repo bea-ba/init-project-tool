@@ -6,11 +6,13 @@ import { Moon, Square } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateSleepPhases, calculateSleepQuality } from '@/utils/sleepCalculations';
 import { generateSecureId } from '@/utils/encryption';
+import { useScreenReader, ScreenReaderAnnouncer } from '@/hooks/useScreenReader';
 
 const SleepTracker = () => {
   const { activeSleep, startSleep, stopSleep, addSession } = useSleep();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { announcement, announce } = useScreenReader();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -40,6 +42,7 @@ const SleepTracker = () => {
       },
     };
     startSleep(newSession);
+    announce('Sleep tracking started. Sweet dreams!');
   };
 
   const handleStopSleep = () => {
@@ -63,6 +66,9 @@ const SleepTracker = () => {
 
     addSession(completedSession);
     stopSleep();
+    const hours = Math.floor(duration / 60);
+    const mins = duration % 60;
+    announce(`Sleep tracking stopped. You slept for ${hours} hours and ${mins} minutes. Quality score: ${completedSession.quality}%.`);
     navigate('/');
   };
 
@@ -77,10 +83,11 @@ const SleepTracker = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 pb-20 md:pb-6">
+      <ScreenReaderAnnouncer announcement={announcement} />
       <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Sleep Tracker</h1>
-          <Button variant="ghost" onClick={() => navigate('/')}>
+          <Button variant="ghost" onClick={() => navigate('/')} aria-label="Go back to dashboard">
             Back
           </Button>
         </div>
@@ -95,9 +102,15 @@ const SleepTracker = () => {
 
             {activeSleep ? (
               <>
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-2">Sleep Duration</p>
-                  <p className="text-5xl font-bold tracking-wider">{getSleepDuration()}</p>
+                <div className="text-center" role="timer" aria-live="off" aria-atomic="true">
+                  <p className="text-sm text-muted-foreground mb-2" id="sleep-duration-label">Sleep Duration</p>
+                  <p
+                    className="text-5xl font-bold tracking-wider"
+                    aria-labelledby="sleep-duration-label"
+                    aria-label={`Sleep duration: ${getSleepDuration()}`}
+                  >
+                    {getSleepDuration()}
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
@@ -140,8 +153,9 @@ const SleepTracker = () => {
               variant="destructive"
               onClick={handleStopSleep}
               className="w-full max-w-xs h-16 text-lg"
+              aria-label="Stop sleep tracking"
             >
-              <Square className="w-6 h-6 mr-2" />
+              <Square className="w-6 h-6 mr-2" aria-hidden="true" />
               Stop Tracking
             </Button>
           ) : (
@@ -149,8 +163,9 @@ const SleepTracker = () => {
             size="lg"
             onClick={handleStartSleep}
             className="w-full max-w-xs h-16 text-lg"
+            aria-label="Start sleep tracking"
           >
-            <Moon className="w-6 h-6 mr-2" />
+            <Moon className="w-6 h-6 mr-2" aria-hidden="true" />
             Begin Sleep Journey
           </Button>
           )}

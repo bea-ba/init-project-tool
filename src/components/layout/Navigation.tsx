@@ -16,14 +16,21 @@ const NAV_ITEMS = [
 
 export const Navigation = () => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 md:hidden">
-      <div className="flex items-center justify-around px-2 py-2">
+    <nav
+      id="navigation"
+      className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 md:hidden"
+      role="navigation"
+      aria-label="Mobile navigation"
+    >
+      <div className="flex items-center justify-around px-2 py-2" role="menubar">
         {NAV_ITEMS.slice(0, 5).map((item) => {
           const Icon = item.icon;
           return (
             <NavLink
               key={item.path}
               to={item.path}
+              role="menuitem"
+              aria-label={`Navigate to ${item.label}`}
               className={({ isActive }) =>
                 cn(
                   'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors',
@@ -33,7 +40,7 @@ export const Navigation = () => {
                 )
               }
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-5 h-5" aria-hidden="true" />
               <span className="text-[10px] font-medium">{item.label}</span>
             </NavLink>
           );
@@ -45,21 +52,28 @@ export const Navigation = () => {
 
 export const DesktopSidebar = () => {
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border min-h-screen sticky top-0">
+    <aside
+      id="navigation"
+      className="hidden md:flex flex-col w-64 bg-card border-r border-border min-h-screen sticky top-0"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="p-6">
         <h1 className="text-2xl font-bold font-heading bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
           Dreamwell
         </h1>
         <p className="text-sm text-muted-foreground mt-1">Rest Deeply, Live Fully</p>
       </div>
-      
-      <nav className="flex-1 px-3">
+
+      <nav className="flex-1 px-3" role="menu" aria-label="Main menu">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink
               key={item.path}
               to={item.path}
+              role="menuitem"
+              aria-label={`Navigate to ${item.label}`}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors',
@@ -69,7 +83,7 @@ export const DesktopSidebar = () => {
                 )
               }
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-5 h-5" aria-hidden="true" />
               <span className="font-medium">{item.label}</span>
             </NavLink>
           );

@@ -11,6 +11,7 @@ import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DashboardSkeleton } from "./components/ui/loading-skeletons";
 import { registerServiceWorker } from "./utils/serviceWorker";
+import { SkipLinks } from "./components/a11y/SkipLinks";
 
 // Eager load critical pages
 import Dashboard from "./pages/Dashboard";
@@ -53,9 +54,10 @@ const App = () => {
             <NotificationService />
             <PWAInstallPrompt />
             <BrowserRouter>
+              <SkipLinks />
               <div className="flex">
                 <DesktopSidebar />
-                <div className="flex-1">
+                <main id="main-content" className="flex-1" role="main" aria-label="Main content">
                   <Suspense fallback={<PageLoader />}>
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
@@ -70,7 +72,7 @@ const App = () => {
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
-                </div>
+                </main>
               </div>
               <Navigation />
             </BrowserRouter>
