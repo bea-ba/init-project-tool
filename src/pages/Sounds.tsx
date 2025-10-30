@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { useNavigate } from 'react-router-dom';
-import { Play, Pause, Volume2, Cloud, Waves, TreePine, Zap, Music, Wind } from 'lucide-react';
+import { Play, Pause, Volume2, Cloud, Waves, TreePine, Zap, Music, Wind, StopCircle, Timer } from 'lucide-react';
 import { useSleep } from '@/contexts/SleepContext';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { SoundId } from '@/utils/audioPlayer';
+import { toast } from 'sonner';
 
 const SOUNDS = [
-  { id: 'rain', name: 'Rain', category: 'nature', icon: Cloud, premium: false },
-  { id: 'ocean', name: 'Ocean Waves', category: 'nature', icon: Waves, premium: false },
-  { id: 'forest', name: 'Forest', category: 'nature', icon: TreePine, premium: false },
-  { id: 'thunderstorm', name: 'Thunderstorm', category: 'nature', icon: Zap, premium: true },
-  { id: 'white-noise', name: 'White Noise', category: 'noise', icon: Wind, premium: false },
-  { id: 'pink-noise', name: 'Pink Noise', category: 'noise', icon: Wind, premium: true },
-  { id: 'piano', name: 'Piano Melody', category: 'classical', icon: Music, premium: true },
-  { id: 'strings', name: 'String Quartet', category: 'classical', icon: Music, premium: true },
+  { id: 'rain' as SoundId, name: 'Rain', category: 'nature', icon: Cloud, premium: false },
+  { id: 'ocean' as SoundId, name: 'Ocean Waves', category: 'nature', icon: Waves, premium: false },
+  { id: 'forest' as SoundId, name: 'Forest', category: 'nature', icon: TreePine, premium: false },
+  { id: 'thunderstorm' as SoundId, name: 'Thunderstorm', category: 'nature', icon: Zap, premium: true },
+  { id: 'white-noise' as SoundId, name: 'White Noise', category: 'noise', icon: Wind, premium: false },
+  { id: 'pink-noise' as SoundId, name: 'Pink Noise', category: 'noise', icon: Wind, premium: true },
+  { id: 'piano' as SoundId, name: 'Piano Melody', category: 'classical', icon: Music, premium: true },
+  { id: 'strings' as SoundId, name: 'String Quartet', category: 'classical', icon: Music, premium: true },
 ];
 
 const SLEEP_TIMERS = [5, 10, 15, 30, 45, 60];
@@ -22,21 +25,48 @@ const SLEEP_TIMERS = [5, 10, 15, 30, 45, 60];
 const Sounds = () => {
   const { settings } = useSleep();
   const navigate = useNavigate();
-  const [playingSound, setPlayingSound] = useState<string | null>(null);
-  const [volume, setVolume] = useState([70]);
-  const [selectedTimer, setSelectedTimer] = useState(30);
+  const {
+    playingSound,
+    volume,
+    timerMinutes,
+    toggleSound,
+    stopAll,
+    setVolume,
+    setSleepTimer,
+    clearTimer,
+    isPlaying,
+  } = useAudioPlayer();
 
-  const handlePlayPause = (soundId: string, premium: boolean) => {
+  // Show toast when timer is set
+  useEffect(() => {
+    if (timerMinutes) {
+      toast.success(`Sleep timer set for ${timerMinutes} minutes`, {
+        description: 'Sound will gradually fade out',
+      });
+    }
+  }, [timerMinutes]);
+
+  const handlePlayPause = (soundId: SoundId, premium: boolean) => {
     if (premium && !settings.premium) {
       navigate('/premium');
       return;
     }
 
-    if (playingSound === soundId) {
-      setPlayingSound(null);
-    } else {
-      setPlayingSound(soundId);
+    toggleSound(soundId);
+  };
+
+  const handleTimerSelect = (minutes: number) => {
+    if (!playingSound) {
+      toast.error('Please play a sound first');
+      return;
     }
+
+    setSleepTimer(minutes);
+  };
+
+  const handleStopAll = () => {
+    stopAll();
+    toast.info('Playback stopped');
   };
 
   return (
@@ -51,7 +81,7 @@ const Sounds = () => {
 
         {/* Now Playing Card */}
         {playingSound && (
-          <Card className="p-6 mb-8 bg-gradient-to-br from-primary/10 to-secondary/10">
+          <Card className="p-6 mb-8 bg-gradient-to-br from-primary/10 to-secondary/10 animate-fade-in">
             <div className="text-center mb-6">
               <p className="text-sm text-muted-foreground mb-2">Now Playing</p>
               <h3 className="text-2xl font-bold">
@@ -63,11 +93,11 @@ const Sounds = () => {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <Volume2 className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{volume[0]}%</span>
+                  <span className="text-sm text-muted-foreground">{volume}%</span>
                 </div>
                 <Slider
-                  value={volume}
-                  onValueChange={setVolume}
+                  value={[volume]}
+                  onValueChange={(value) => setVolume(value[0])}
                   min={0}
                   max={100}
                   step={1}
@@ -75,14 +105,29 @@ const Sounds = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground mb-3">Sleep Timer</p>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Timer className="w-5 h-5 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Sleep Timer</p>
+                  </div>
+                  {timerMinutes && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearTimer}
+                      className="text-xs"
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
                 <div className="grid grid-cols-6 gap-2">
                   {SLEEP_TIMERS.map((time) => (
                     <button
                       key={time}
-                      onClick={() => setSelectedTimer(time)}
+                      onClick={() => handleTimerSelect(time)}
                       className={`py-2 rounded-lg text-sm font-medium transition-colors ${
-                        selectedTimer === time
+                        timerMinutes === time
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted text-muted-foreground hover:bg-primary/20'
                       }`}
@@ -91,8 +136,31 @@ const Sounds = () => {
                     </button>
                   ))}
                 </div>
+                {timerMinutes && (
+                  <p className="text-xs text-center text-muted-foreground mt-3">
+                    Sound will fade out in {timerMinutes} minutes
+                  </p>
+                )}
               </div>
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleStopAll}
+              >
+                <StopCircle className="w-4 h-4 mr-2" />
+                Stop Playback
+              </Button>
             </div>
+          </Card>
+        )}
+
+        {/* Hint when nothing is playing */}
+        {!playingSound && (
+          <Card className="p-6 mb-8 bg-primary/5 border-primary/20">
+            <p className="text-sm text-center text-muted-foreground">
+              Select a sound below to start your relaxation journey
+            </p>
           </Card>
         )}
 
@@ -103,12 +171,12 @@ const Sounds = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SOUNDS.filter(s => s.category === 'nature').map((sound) => {
                 const Icon = sound.icon;
-                const isPlaying = playingSound === sound.id;
+                const playing = isPlaying(sound.id);
                 return (
                   <Card
                     key={sound.id}
                     className={`relative overflow-hidden transition-all hover:scale-105 ${
-                      isPlaying ? 'ring-2 ring-primary' : ''
+                      playing ? 'ring-2 ring-primary' : ''
                     }`}
                   >
                     <button
@@ -116,12 +184,12 @@ const Sounds = () => {
                       className="w-full p-6 text-center"
                     >
                       <div className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center ${
-                        isPlaying ? 'bg-primary/20 animate-pulse' : 'bg-muted'
+                        playing ? 'bg-primary/20 animate-pulse' : 'bg-muted'
                       }`}>
-                        {isPlaying ? (
+                        {playing ? (
                           <Pause className="w-8 h-8 text-primary" />
                         ) : (
-                          <Icon className="w-8 h-8 text-muted-foreground" />
+                          <Play className="w-8 h-8 text-muted-foreground" />
                         )}
                       </div>
                       <p className="font-semibold mb-1">{sound.name}</p>
@@ -140,12 +208,12 @@ const Sounds = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SOUNDS.filter(s => s.category === 'noise').map((sound) => {
                 const Icon = sound.icon;
-                const isPlaying = playingSound === sound.id;
+                const playing = isPlaying(sound.id);
                 return (
                   <Card
                     key={sound.id}
                     className={`relative overflow-hidden transition-all hover:scale-105 ${
-                      isPlaying ? 'ring-2 ring-primary' : ''
+                      playing ? 'ring-2 ring-primary' : ''
                     }`}
                   >
                     <button
@@ -153,12 +221,12 @@ const Sounds = () => {
                       className="w-full p-6 text-center"
                     >
                       <div className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center ${
-                        isPlaying ? 'bg-primary/20 animate-pulse' : 'bg-muted'
+                        playing ? 'bg-primary/20 animate-pulse' : 'bg-muted'
                       }`}>
-                        {isPlaying ? (
+                        {playing ? (
                           <Pause className="w-8 h-8 text-primary" />
                         ) : (
-                          <Icon className="w-8 h-8 text-muted-foreground" />
+                          <Play className="w-8 h-8 text-muted-foreground" />
                         )}
                       </div>
                       <p className="font-semibold mb-1">{sound.name}</p>
@@ -177,12 +245,12 @@ const Sounds = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SOUNDS.filter(s => s.category === 'classical').map((sound) => {
                 const Icon = sound.icon;
-                const isPlaying = playingSound === sound.id;
+                const playing = isPlaying(sound.id);
                 return (
                   <Card
                     key={sound.id}
                     className={`relative overflow-hidden transition-all hover:scale-105 ${
-                      isPlaying ? 'ring-2 ring-primary' : ''
+                      playing ? 'ring-2 ring-primary' : ''
                     }`}
                   >
                     <button
@@ -190,12 +258,12 @@ const Sounds = () => {
                       className="w-full p-6 text-center"
                     >
                       <div className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center ${
-                        isPlaying ? 'bg-primary/20 animate-pulse' : 'bg-muted'
+                        playing ? 'bg-primary/20 animate-pulse' : 'bg-muted'
                       }`}>
-                        {isPlaying ? (
+                        {playing ? (
                           <Pause className="w-8 h-8 text-primary" />
                         ) : (
-                          <Icon className="w-8 h-8 text-muted-foreground" />
+                          <Play className="w-8 h-8 text-muted-foreground" />
                         )}
                       </div>
                       <p className="font-semibold mb-1">{sound.name}</p>
@@ -215,7 +283,7 @@ const Sounds = () => {
             <div className="text-center">
               <h3 className="text-xl font-semibold mb-2">Unlock All Sounds</h3>
               <p className="text-muted-foreground mb-4">
-                Get access to all premium sounds and mix multiple tracks
+                Get access to all premium sounds and advanced features
               </p>
               <Button onClick={() => navigate('/premium')}>
                 Upgrade to Premium

@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Coffee, Dumbbell, Wine, Pizza, Brain, BookOpen } from 'lucide-react';
+import { generateSecureId } from '@/utils/encryption';
+import { sanitizeNoteText } from '@/utils/validation';
 
 const TAGS = [
   { id: 'exercise', label: 'Exercise', icon: Dumbbell },
@@ -27,15 +29,27 @@ const SleepNotes = () => {
   const [moodAfter, setMoodAfter] = useState(3);
 
   const handleSave = () => {
-    if (!text.trim()) {
+    const sanitizedText = sanitizeNoteText(text);
+
+    if (!sanitizedText.trim()) {
       toast.error('Please add some notes');
       return;
     }
 
+    if (sanitizedText.length > 1000) {
+      toast.error('Note is too long. Maximum 1000 characters allowed.');
+      return;
+    }
+
+    if (selectedTags.length > 10) {
+      toast.error('Maximum 10 tags allowed');
+      return;
+    }
+
     const note = {
-      id: Date.now().toString(),
+      id: generateSecureId(),
       date: new Date(),
-      text,
+      text: sanitizedText,
       tags: selectedTags,
       activities: {
         exercise: (selectedTags.includes('exercise') ? 'evening' : null) as 'morning' | 'afternoon' | 'evening' | null,
@@ -81,7 +95,11 @@ const SleepNotes = () => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="mt-2 min-h-[120px]"
+            maxLength={1000}
           />
+          <p className="text-xs text-muted-foreground mt-2">
+            {text.length}/1000 characters
+          </p>
         </Card>
 
         <Card className="p-6 mb-6">

@@ -1,8 +1,23 @@
+import { useMemo } from 'react';
 import { useSleep } from '@/contexts/SleepContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
-import { Lightbulb, TrendingUp, Award, Clock, Target, Sparkles } from 'lucide-react';
+import { Sparkles, TrendingUp } from 'lucide-react';
+import { TrendChart } from '@/components/analytics/TrendChart';
+import { PhaseDistributionChart } from '@/components/analytics/PhaseDistributionChart';
+import { CorrelationInsights } from '@/components/analytics/CorrelationInsights';
+import { RecommendationsCard } from '@/components/analytics/RecommendationsCard';
+import { WeekdayPatternsChart } from '@/components/analytics/WeekdayPatternsChart';
+import {
+  getSleepQualityTrend,
+  getSleepDurationTrend,
+  getAveragePhasesDistribution,
+  analyzeActivityCorrelations,
+  generateRecommendations,
+  getWeekdayPatterns,
+} from '@/utils/analytics';
 
 const SLEEP_TIPS = [
   "Keep your bedroom cool (60-67°F) for optimal sleep",
@@ -16,11 +31,11 @@ const SLEEP_TIPS = [
 ];
 
 const Insights = () => {
-  const { sessions, settings } = useSleep();
+  const { sessions, notes, settings } = useSleep();
   const navigate = useNavigate();
 
   const completedSessions = sessions.filter(s => s.endTime);
-  
+
   const avgDuration = completedSessions.length > 0
     ? completedSessions.reduce((sum, s) => sum + s.duration, 0) / completedSessions.length
     : 0;
@@ -39,55 +54,71 @@ const Insights = () => {
 
   const randomTip = SLEEP_TIPS[Math.floor(Math.random() * SLEEP_TIPS.length)];
 
-  const generateInsights = () => {
-    const insights = [];
-    
-    if (avgDuration < settings.sleepGoal - 30) {
-      insights.push({
-        icon: Clock,
-        title: "Increase Sleep Duration",
-        description: `You're averaging ${Math.round(avgDuration / 60)}h ${Math.round(avgDuration % 60)}m. Try to add 30 minutes to your sleep.`,
-        color: "text-warning"
-      });
-    }
+  // Analytics data - memoized for performance
+  const qualityTrend7d = useMemo(
+    () => getSleepQualityTrend(completedSessions, 7),
+    [completedSessions]
+  );
+  const qualityTrend30d = useMemo(
+    () => getSleepQualityTrend(completedSessions, 30),
+    [completedSessions]
+  );
+  const durationTrend7d = useMemo(
+    () => getSleepDurationTrend(completedSessions, 7),
+    [completedSessions]
+  );
+  const durationTrend30d = useMemo(
+    () => getSleepDurationTrend(completedSessions, 30),
+    [completedSessions]
+  );
+  const phasesDistribution = useMemo(
+    () => getAveragePhasesDistribution(completedSessions),
+    [completedSessions]
+  );
+  const correlations = useMemo(
+    () => analyzeActivityCorrelations(completedSessions, notes),
+    [completedSessions, notes]
+  );
+  const recommendations = useMemo(
+    () => generateRecommendations(completedSessions, notes, settings.sleepGoal),
+    [completedSessions, notes, settings.sleepGoal]
+  );
+  const weekdayPatterns = useMemo(
+    () => getWeekdayPatterns(completedSessions),
+    [completedSessions]
+  );
 
-    if (avgQuality < 70) {
-      insights.push({
-        icon: Target,
-        title: "Improve Sleep Quality",
-        description: "Consider your sleep environment. Is it dark, quiet, and cool enough?",
-        color: "text-destructive"
-      });
-    }
+  if (completedSessions.length === 0) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-6">
+        <div className="max-w-6xl mx-auto p-6">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold">Sleep Insights</h1>
+            <Button variant="ghost" onClick={() => navigate('/')} className="md:hidden">
+              Back
+            </Button>
+          </div>
 
-    if (consistency < 70) {
-      insights.push({
-        icon: TrendingUp,
-        title: "Build Consistency",
-        description: "Try going to bed at the same time every night, even on weekends.",
-        color: "text-secondary"
-      });
-    }
-
-    if (completedSessions.length > 0 && avgQuality >= 80) {
-      insights.push({
-        icon: Award,
-        title: "Excellent Sleep Quality!",
-        description: "You're maintaining great sleep habits. Keep it up!",
-        color: "text-success"
-      });
-    }
-
-    return insights;
-  };
-
-  const insights = generateInsights();
+          <Card className="p-8 text-center">
+            <TrendingUp className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h3 className="text-xl font-semibold mb-2">No Data Yet</h3>
+            <p className="text-muted-foreground mb-6">
+              Start tracking your sleep to unlock powerful insights and personalized recommendations
+            </p>
+            <Button onClick={() => navigate('/sleep-tracker')}>
+              Start Tracking Sleep
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-6">
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Sleep Insights</h1>
+          <h1 className="text-2xl font-bold">Sleep Insights & Analytics</h1>
           <Button variant="ghost" onClick={() => navigate('/')} className="md:hidden">
             Back
           </Button>
@@ -106,7 +137,7 @@ const Insights = () => {
           </div>
         </Card>
 
-        {/* Sleep Score Breakdown */}
+        {/* Sleep Score Overview */}
         <Card className="p-6 mb-8">
           <h2 className="text-xl font-semibold mb-6">Your Sleep Score</h2>
           <div className="flex items-center justify-center mb-6">
@@ -160,37 +191,75 @@ const Insights = () => {
           </div>
         </Card>
 
-        {/* Personal Insights */}
-        <div className="space-y-4 mb-8">
-          <h2 className="text-xl font-semibold">Personal Insights</h2>
-          {insights.length > 0 ? (
-            insights.map((insight, index) => {
-              const Icon = insight.icon;
-              return (
-                <Card key={index} className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full ${insight.color} bg-opacity-10`}>
-                      <Icon className={`w-6 h-6 ${insight.color}`} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">{insight.title}</h3>
-                      <p className="text-muted-foreground text-sm">{insight.description}</p>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })
-          ) : (
-            <Card className="p-8 text-center">
-              <Lightbulb className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground mb-4">
-                Track more sleep sessions to get personalized insights
-              </p>
-              <Button onClick={() => navigate('/sleep-tracker')}>
-                Start Tracking
-              </Button>
-            </Card>
-          )}
+        {/* Personalized Recommendations */}
+        <div className="mb-8">
+          <RecommendationsCard recommendations={recommendations} />
+        </div>
+
+        {/* Trends Section with Tabs */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Sleep Trends</h2>
+          <Tabs defaultValue="7d" className="w-full">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="7d">Last 7 Days</TabsTrigger>
+              <TabsTrigger value="30d">Last 30 Days</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="7d" className="space-y-6 mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <TrendChart
+                  data={qualityTrend7d}
+                  title="Sleep Quality Trend"
+                  color="#6366f1"
+                  goalLine={80}
+                  yAxisLabel="Quality (%)"
+                />
+                <TrendChart
+                  data={durationTrend7d}
+                  title="Sleep Duration Trend"
+                  color="#10b981"
+                  goalLine={settings.sleepGoal / 60}
+                  yAxisLabel="Hours"
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="30d" className="space-y-6 mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <TrendChart
+                  data={qualityTrend30d}
+                  title="Sleep Quality Trend"
+                  color="#6366f1"
+                  goalLine={80}
+                  yAxisLabel="Quality (%)"
+                />
+                <TrendChart
+                  data={durationTrend30d}
+                  title="Sleep Duration Trend"
+                  color="#10b981"
+                  goalLine={settings.sleepGoal / 60}
+                  yAxisLabel="Hours"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Analysis Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <PhaseDistributionChart
+            data={phasesDistribution}
+            title="Average Sleep Phases Distribution"
+          />
+          <WeekdayPatternsChart
+            patterns={weekdayPatterns}
+            title="Weekday Sleep Patterns"
+          />
+        </div>
+
+        {/* Activity Correlations */}
+        <div className="mb-8">
+          <CorrelationInsights insights={correlations} />
         </div>
 
         {/* Global Statistics */}
