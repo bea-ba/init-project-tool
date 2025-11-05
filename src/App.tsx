@@ -8,6 +8,7 @@ import { SleepProvider } from "./contexts/SleepContext";
 import { Navigation, DesktopSidebar } from "./components/layout/Navigation";
 import { NotificationService } from "./components/NotificationService";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { AlarmNotificationBar } from "./components/AlarmNotificationBar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DashboardSkeleton } from "./components/ui/loading-skeletons";
 import { registerServiceWorker } from "./utils/serviceWorker";
@@ -54,6 +55,7 @@ const App = () => {
             <Sonner />
             <NotificationService />
             <PWAInstallPrompt />
+            <AlarmNotificationBar />
             <BrowserRouter>
               <SkipLinks />
               <div className="flex">

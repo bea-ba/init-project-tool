@@ -240,6 +240,12 @@ export const initializeNotificationService = (
 };
 
 /**
+ * Trigger an alarm notification (alias for triggerAlarm)
+ * Used by alarm scheduler
+ */
+export const triggerAlarmNotification = triggerAlarm;
+
+/**
  * Show a notification to ask for permission
  */
 export const promptForNotificationPermission = (): void => {

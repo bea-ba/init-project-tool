@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { SleepSession, Alarm, SleepNote, UserSettings } from '@/types/sleep';
 import { storage } from '@/utils/localStorage';
+import { alarmScheduler } from '@/utils/alarmScheduler';
+import { toast } from 'sonner';
 
 interface SleepContextType {
   sessions: SleepSession[];
@@ -44,6 +46,37 @@ export const SleepProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       document.documentElement.classList.remove('dark');
     }
   }, [settings.theme]);
+
+  // Initialize and manage alarm scheduler
+  useEffect(() => {
+    // Start the alarm scheduler with current alarms
+    alarmScheduler.start(alarms, (alarm) => {
+      // Callback when alarm triggers
+      toast(`⏰ ${alarm.label || 'Alarm'}`, {
+        description: 'Time to wake up!',
+        duration: 10000,
+        action: {
+          label: 'Dismiss',
+          onClick: () => alarmScheduler.dismissAlarm(alarm.id),
+        },
+      });
+    });
+
+    // Cleanup on unmount
+    return () => {
+      alarmScheduler.stop();
+    };
+  }, []); // Empty deps - initialize once
+
+  // Update scheduler when alarms change
+  useEffect(() => {
+    alarmScheduler.updateAlarms(alarms);
+  }, [alarms]);
+
+  // Update scheduler when active sleep changes (for sleep cycle-based smart wake)
+  useEffect(() => {
+    alarmScheduler.updateActiveSleep(activeSleep);
+  }, [activeSleep]);
 
   const addSession = (session: SleepSession) => {
     storage.saveSleepSession(session);
