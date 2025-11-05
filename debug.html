@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreamwell Debug</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: #ff6b6b;
+        }
+        .info {
+            color: #4dabf7;
+        }
+        .success {
+            color: #51cf66;
+        }
+    </style>
+</head>
+<body>
+<script>
+    // Capture all console messages
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    const logContainer = document.body;
+
+    function log(type, ...args) {
+        const div = document.createElement('div');
+        div.className = type;
+        div.textContent = `[${type.toUpperCase()}] ${args.join(' ')}`;
+        logContainer.appendChild(div);
+    }
+
+    console.log = function(...args) {
+        log('info', ...args);
+        originalLog.apply(console, args);
+    };
+
+    console.error = function(...args) {
+        log('error', ...args);
+        originalError.apply(console, args);
+    };
+
+    console.warn = function(...args) {
+        log('warn', ...args);
+        originalWarn.apply(console, args);
+    };
+
+    // Log basic info
+    console.log('Debug page loaded');
+    console.log('User Agent:', navigator.userAgent);
+    console.log('Current URL:', window.location.href);
+
+    // Check if modules are supported
+    if ('noModule' in HTMLScriptElement.prototype) {
+        console.log('✓ ES6 modules supported');
+    } else {
+        console.error('✗ ES6 modules NOT supported');
+    }
+
+    // Try to load the main script with error handling
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = '/assets/index-BVIO48A7.js';
+
+    script.onload = () => {
+        console.log('✓ Main script loaded successfully');
+
+        // Check if React rendered after a delay
+        setTimeout(() => {
+            const root = document.getElementById('root');
+            if (root && root.children.length > 0) {
+                console.log('✓ React app rendered successfully');
+                console.log('Root children count:', root.children.length);
+            } else {
+                console.error('✗ React app NOT rendered after 3 seconds');
+
+                // Check for any react-root divs
+                const reactRoots = document.querySelectorAll('[data-reactroot]');
+                console.log('React root elements found:', reactRoots.length);
+            }
+        }, 3000);
+    };
+
+    script.onerror = (e) => {
+        console.error('✗ Failed to load main script:', e);
+
+        // Try to load vendor scripts first
+        console.log('Attempting to load vendor scripts...');
+
+        const vendors = [
+            '/assets/vendor-react-CpjeX5d2.js',
+            '/assets/vendor-QR4QN_lN.js',
+            '/assets/vendor-framer-DwR2JlI1.js',
+            '/assets/vendor-recharts-BNSeq3zG.js',
+            '/assets/vendor-radix-BA32w1ww.js'
+        ];
+
+        vendors.forEach(vendor => {
+            const vScript = document.createElement('script');
+            vScript.type = 'module';
+            vScript.src = vendor;
+            vScript.onload = () => console.log(`✓ Loaded ${vendor}`);
+            vScript.onerror = () => console.error(`✗ Failed to load ${vendor}`);
+            document.head.appendChild(vScript);
+        });
+    };
+
+    document.head.appendChild(script);
+
+    // Add root div
+    const root = document.createElement('div');
+    root.id = 'root';
+    document.body.appendChild(root);
+    console.log('Root div created');
+</script>
+</body>
+</html>

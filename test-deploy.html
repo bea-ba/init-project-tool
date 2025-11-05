@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Dreamwell</title>
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+        }
+        .error {
+            color: #ef4444;
+            background: #991b1b;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #22c55e;
+            background: #166534;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dreamwell Deployment Test</h1>
+    <div id="status">Testing...</div>
+
+    <script>
+        const status = document.getElementById('status');
+
+        // Test 1: Check if root element exists
+        const root = document.getElementById('root');
+        if (!root) {
+            status.innerHTML += '<div class="error">❌ Root element not found</div>';
+        } else {
+            status.innerHTML += '<div class="success">✅ Root element found</div>';
+        }
+
+        // Test 2: Try to load the main module
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/assets/index-BVIO48A7.js';
+        script.onload = () => {
+            status.innerHTML += '<div class="success">✅ Main JS loaded successfully</div>';
+            setTimeout(() => {
+                if (document.getElementById('root').children.length > 0) {
+                    status.innerHTML += '<div class="success">✅ React app rendered</div>';
+                } else {
+                    status.innerHTML += '<div class="error">❌ React app not rendered after 2 seconds</div>';
+                }
+            }, 2000);
+        };
+        script.onerror = (e) => {
+            status.innerHTML += '<div class="error">❌ Failed to load main JS: ' + e + '</div>';
+        };
+        document.head.appendChild(script);
+
+        // Test 3: Check CSS
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = '/assets/index-CWrMKCpV.css';
+        css.onload = () => {
+            status.innerHTML += '<div class="success">✅ CSS loaded successfully</div>';
+        };
+        css.onerror = () => {
+            status.innerHTML += '<div class="error">❌ Failed to load CSS</div>';
+        };
+        document.head.appendChild(css);
+    </script>
+
+    <div id="root"></div>
+</body>
+</html>
