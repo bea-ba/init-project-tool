@@ -21,7 +21,7 @@ const Dashboard = () => {
     new Date(b.endTime!).getTime() - new Date(a.endTime!).getTime()
   )[0];
 
-  const quality = latestSession ? calculateSleepQuality(latestSession) : 0;
+  const quality = latestSession ? calculateSleepQuality(latestSession, sessions) : 0;
   const sleepDebt = calculateSleepDebt(sessions, settings.sleepGoal);
 
   const nextAlarm = alarms

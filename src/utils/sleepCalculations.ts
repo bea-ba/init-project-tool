@@ -1,20 +1,23 @@
 import { SleepSession } from '@/types/sleep';
 
-export const calculateSleepQuality = (session: SleepSession): number => {
+export const calculateSleepQuality = (
+  session: SleepSession,
+  allSessions: SleepSession[] = []
+): number => {
   // Duration Score (30%)
   const durationScore = calculateDurationScore(session.duration);
-  
+
   // Efficiency Score (25%) - simplified for now
   const efficiencyScore = 100;
-  
+
   // Interruption Score (20%)
   const interruptionScore = Math.max(0, 100 - (session.interruptions * 10));
-  
+
   // Phase Distribution Score (15%)
   const phaseScore = calculatePhaseScore(session.phases);
-  
-  // Consistency Score (10%) - simplified for now
-  const consistencyScore = 100;
+
+  // Consistency Score (10%) - based on sleep schedule regularity
+  const consistencyScore = calculateConsistencyScore(allSessions);
 
   const quality = (
     durationScore * 0.3 +
@@ -122,4 +125,52 @@ export const getSleepDebtColor = (debtMinutes: number): string => {
   if (hours <= 5) return 'text-warning';
   if (hours <= 8) return 'text-orange-500';
   return 'text-destructive';
+};
+
+const calculateConsistencyScore = (sessions: SleepSession[]): number => {
+  // Get last 7 completed sessions
+  const completedSessions = sessions
+    .filter(s => s.endTime !== null)
+    .slice(-7);
+
+  // Need at least 3 sessions to calculate consistency
+  if (completedSessions.length < 3) {
+    return 100; // Default to perfect score for new users
+  }
+
+  // Extract bedtime and wake time hours (as decimal, e.g., 22.5 = 10:30 PM)
+  const bedtimes = completedSessions.map(s => {
+    const date = new Date(s.startTime);
+    return date.getHours() + date.getMinutes() / 60;
+  });
+
+  const wakeTimes = completedSessions.map(s => {
+    const date = new Date(s.endTime!);
+    return date.getHours() + date.getMinutes() / 60;
+  });
+
+  // Calculate standard deviation for both
+  const bedtimeStdDev = calculateStandardDeviation(bedtimes);
+  const wakeTimeStdDev = calculateStandardDeviation(wakeTimes);
+
+  // Average the two standard deviations
+  const avgStdDev = (bedtimeStdDev + wakeTimeStdDev) / 2;
+
+  // Convert to 0-100 score
+  // 0 hours deviation = 100 score
+  // 2+ hours deviation = 0 score
+  // Linear interpolation between
+  const score = Math.max(0, Math.min(100, 100 - (avgStdDev / 2) * 100));
+
+  return Math.round(score);
+};
+
+const calculateStandardDeviation = (values: number[]): number => {
+  if (values.length === 0) return 0;
+
+  const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+  const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
+  const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+
+  return Math.sqrt(variance);
 };

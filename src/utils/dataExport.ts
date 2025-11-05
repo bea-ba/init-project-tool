@@ -1,4 +1,5 @@
 import { storage } from './localStorage';
+import type { SleepSession, Alarm, SleepNote } from '@/types/sleep';
 
 /**
  * Export all app data to JSON format
@@ -122,31 +123,31 @@ export const importDataFromJSON = (jsonString: string): { success: boolean; mess
 
     // Import sessions
     if (data.sessions && Array.isArray(data.sessions)) {
-      data.sessions.forEach((session: any) => {
+      data.sessions.forEach((session: Partial<SleepSession> & { startTime: string; endTime?: string | null }) => {
         // Convert date strings back to Date objects
         const sessionWithDates = {
           ...session,
           startTime: new Date(session.startTime),
           endTime: session.endTime ? new Date(session.endTime) : null,
-        };
+        } as SleepSession;
         storage.saveSleepSession(sessionWithDates);
       });
     }
 
     // Import alarms
     if (data.alarms && Array.isArray(data.alarms)) {
-      data.alarms.forEach((alarm: any) => {
+      data.alarms.forEach((alarm: Alarm) => {
         storage.saveAlarm(alarm);
       });
     }
 
     // Import notes
     if (data.notes && Array.isArray(data.notes)) {
-      data.notes.forEach((note: any) => {
+      data.notes.forEach((note: Partial<SleepNote> & { date: string }) => {
         const noteWithDate = {
           ...note,
           date: new Date(note.date),
-        };
+        } as SleepNote;
         storage.saveNote(noteWithDate);
       });
     }

@@ -158,7 +158,7 @@ test.describe('Complete User Journey Integration', () => {
     await page.goto('/');
 
     // Use only keyboard to navigate
-    let currentUrl = page.url();
+    const currentUrl = page.url();
 
     // Tab to skip link
     await page.keyboard.press('Tab');

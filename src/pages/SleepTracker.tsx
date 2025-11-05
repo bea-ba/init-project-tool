@@ -9,7 +9,7 @@ import { generateSecureId } from '@/utils/encryption';
 import { useScreenReader, ScreenReaderAnnouncer } from '@/hooks/useScreenReader';
 
 const SleepTracker = () => {
-  const { activeSleep, startSleep, stopSleep, addSession } = useSleep();
+  const { activeSleep, startSleep, stopSleep, addSession, sessions } = useSleep();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const { announcement, announce } = useScreenReader();
@@ -62,7 +62,7 @@ const SleepTracker = () => {
       quality: 0,
     };
 
-    completedSession.quality = calculateSleepQuality(completedSession);
+    completedSession.quality = calculateSleepQuality(completedSession, sessions);
 
     addSession(completedSession);
     stopSleep();

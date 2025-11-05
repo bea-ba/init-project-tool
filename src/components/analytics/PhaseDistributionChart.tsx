@@ -37,7 +37,7 @@ export const PhaseDistributionChart = memo(({
     );
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number; percentage: number }> }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-lg">
