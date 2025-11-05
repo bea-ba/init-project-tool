@@ -4,8 +4,12 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  base: mode === 'development' ? '/' : '/init-project-tool/',
+export default defineConfig(({ mode }) => {
+  // For GitHub Pages, use the repo name as base path
+  const base = process.env.GITHUB_ACTIONS ? '/init-project-tool/' : '/';
+
+  return {
+    base,
   server: {
     host: "::",
     port: 8080,
@@ -48,4 +52,5 @@ export default defineConfig(({ mode }) => ({
   },
   // Ensure service worker and manifest are copied to dist
   publicDir: 'public',
-}));
+  };
+});
