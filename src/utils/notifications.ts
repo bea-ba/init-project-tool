@@ -7,21 +7,27 @@ import { audioPlayer } from './audioPlayer';
  * @returns Promise with permission status
  */
 export const requestNotificationPermission = async (): Promise<NotificationPermission> => {
-  if (!('Notification' in window)) {
+  // iOS Safari doesn't support Notification API at all
+  if (typeof window === 'undefined' || typeof window.Notification === 'undefined') {
     console.warn('This browser does not support desktop notifications');
     return 'denied';
   }
 
-  if (Notification.permission === 'granted') {
-    return 'granted';
-  }
+  try {
+    if (window.Notification.permission === 'granted') {
+      return 'granted';
+    }
 
-  if (Notification.permission !== 'denied') {
-    const permission = await Notification.requestPermission();
-    return permission;
-  }
+    if (window.Notification.permission !== 'denied') {
+      const permission = await window.Notification.requestPermission();
+      return permission;
+    }
 
-  return Notification.permission;
+    return window.Notification.permission;
+  } catch (error) {
+    console.warn('Error accessing Notification API:', error);
+    return 'denied';
+  }
 };
 
 /**
@@ -30,37 +36,36 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
  * @param options - Notification options
  */
 export const showNotification = (title: string, options?: NotificationOptions): void => {
-  if (!('Notification' in window)) {
+  if (typeof window === 'undefined' || typeof window.Notification === 'undefined') {
     console.warn('This browser does not support desktop notifications');
     toast.info(title, { description: options?.body });
     return;
   }
 
-  if (Notification.permission === 'granted') {
-    try {
-      new Notification(title, {
+  try {
+    if (window.Notification.permission === 'granted') {
+      new window.Notification(title, {
         icon: '/icon-192.png',
         badge: '/icon-192.png',
         ...options,
       });
-    } catch (error) {
-      console.error('Failed to show notification:', error);
-      toast.info(title, { description: options?.body });
+    } else if (window.Notification.permission !== 'denied') {
+      requestNotificationPermission().then((permission) => {
+        if (permission === 'granted') {
+          new window.Notification(title, {
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            ...options,
+          });
+        }
+      });
     }
-  } else if (Notification.permission !== 'denied') {
-    requestNotificationPermission().then((permission) => {
-      if (permission === 'granted') {
-        new Notification(title, {
-          icon: '/icon-192.png',
-          badge: '/icon-192.png',
-          ...options,
-        });
-      }
-    });
-  } else {
-    // Fallback to toast notification
-    toast.info(title, { description: options?.body });
+  } catch (error) {
+    console.error('Failed to show notification:', error);
   }
+
+  // Always show toast as fallback for mobile/iOS
+  toast.info(title, { description: options?.body });
 };
 
 /**
@@ -194,8 +199,8 @@ export const initializeNotificationService = (
   getAlarms: () => Alarm[],
   getSettings: () => UserSettings
 ): (() => void) => {
-  // Request permission on initialization
-  if (Notification.permission === 'default') {
+  // Request permission on initialization (if supported)
+  if (typeof window !== 'undefined' && window.Notification && window.Notification.permission === 'default') {
     requestNotificationPermission();
   }
 
@@ -249,26 +254,27 @@ export const triggerAlarmNotification = triggerAlarm;
  * Show a notification to ask for permission
  */
 export const promptForNotificationPermission = (): void => {
-  if (!('Notification' in window)) {
+  if (typeof window === 'undefined' || typeof window.Notification === 'undefined') {
     toast.error('Notifications not supported', {
       description: 'Your browser does not support notifications.',
     });
     return;
   }
 
-  if (Notification.permission === 'granted') {
-    toast.success('Notifications enabled', {
-      description: 'You will receive alarm and bedtime reminders.',
-    });
-    return;
-  }
+  try {
+    if (window.Notification.permission === 'granted') {
+      toast.success('Notifications enabled', {
+        description: 'You will receive alarm and bedtime reminders.',
+      });
+      return;
+    }
 
-  if (Notification.permission === 'denied') {
-    toast.error('Notifications blocked', {
-      description: 'Please enable notifications in your browser settings.',
-    });
-    return;
-  }
+    if (window.Notification.permission === 'denied') {
+      toast.error('Notifications blocked', {
+        description: 'Please enable notifications in your browser settings.',
+      });
+      return;
+    }
 
   requestNotificationPermission().then((permission) => {
     if (permission === 'granted') {
@@ -286,4 +292,10 @@ export const promptForNotificationPermission = (): void => {
       });
     }
   });
+  } catch (error) {
+    console.error('Error accessing notification system:', error);
+    toast.error('Notifications not available', {
+      description: 'Unable to access notification system.',
+    });
+  }
 };
