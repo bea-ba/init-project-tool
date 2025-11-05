@@ -33,7 +33,7 @@ const queryClient = new QueryClient();
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen bg-background pb-20 md:pb-6">
+  <div className="min-h-screen bg-background pb-32 md:pb-6">
     <div className="max-w-6xl mx-auto p-6">
       <DashboardSkeleton />
     </div>

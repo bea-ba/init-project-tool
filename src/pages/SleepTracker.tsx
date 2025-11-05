@@ -82,7 +82,7 @@ const SleepTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 pb-20 md:pb-6">
+    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 pb-32 md:pb-6">
       <ScreenReaderAnnouncer announcement={announcement} />
       <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">

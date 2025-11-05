@@ -25,30 +25,59 @@ export const Navigation = () => {
       role="navigation"
       aria-label="Mobile navigation"
     >
-      <div className="flex items-center justify-around px-2 py-2" role="menubar">
-        {NAV_ITEMS.slice(0, 5).map((item) => {
-          const Icon = item.icon;
-          const label = t(item.labelKey);
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              role="menuitem"
-              aria-label={`Navigate to ${label}`}
-              className={({ isActive }) =>
-                cn(
-                  'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors',
-                  isActive
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground'
-                )
-              }
-            >
-              <Icon className="w-5 h-5" aria-hidden="true" />
-              <span className="text-[10px] font-medium">{label}</span>
-            </NavLink>
-          );
-        })}
+      <div className="px-2 py-1" role="menubar">
+        {/* First row - Primary navigation */}
+        <div className="flex items-center justify-around mb-1">
+          {NAV_ITEMS.slice(0, 5).map((item) => {
+            const Icon = item.icon;
+            const label = t(item.labelKey);
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                role="menuitem"
+                aria-label={`Navigate to ${label}`}
+                className={({ isActive }) =>
+                  cn(
+                    'flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-lg transition-colors min-w-0 flex-1',
+                    isActive
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )
+                }
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                <span className="text-[10px] font-medium truncate px-1">{label}</span>
+              </NavLink>
+            );
+          })}
+        </div>
+        {/* Second row - Secondary navigation */}
+        <div className="flex items-center justify-around">
+          {NAV_ITEMS.slice(5).map((item) => {
+            const Icon = item.icon;
+            const label = t(item.labelKey);
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                role="menuitem"
+                aria-label={`Navigate to ${label}`}
+                className={({ isActive }) =>
+                  cn(
+                    'flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-lg transition-colors min-w-0 flex-1',
+                    isActive
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )
+                }
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                <span className="text-[10px] font-medium truncate px-1">{label}</span>
+              </NavLink>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
