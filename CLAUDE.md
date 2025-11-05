@@ -9,20 +9,29 @@ Dreamwell (formerly Sleepzy) is a sleep tracking application built with Vite, Re
 ## Development Commands
 
 ```bash
-# Start development server (runs on port 8080)
-npm run dev
+# Development
+npm run dev              # Start development server (port 8080)
 
-# Build for production
-npm run build
+# Building
+npm run build            # Production build
+npm run build:dev        # Development build (includes dev tools)
+npm run preview          # Preview production build
 
-# Build for development (includes dev tools)
-npm run build:dev
+# Code Quality
+npm run lint             # Run ESLint
 
-# Run linter
-npm run lint
+# Testing - Unit Tests (Vitest)
+npm test                 # Run all unit tests
+npm run test:ui          # Run tests with Vitest UI
+npm run test:coverage    # Generate coverage report
 
-# Preview production build
-npm run preview
+# Testing - E2E (Playwright)
+npm run test:e2e         # Run all E2E tests (auto-starts dev server)
+npm run test:e2e:ui      # Interactive E2E test runner
+npm run test:e2e:headed  # Run E2E tests with browser UI
+npm run test:e2e:debug   # Debug E2E tests
+npm run test:e2e:report  # Show HTML test report
+npm run test:e2e:codegen # Generate E2E tests from browser interactions
 ```
 
 ## Architecture Overview
@@ -47,6 +56,31 @@ All application data persists in localStorage with the `dreamwell_` prefix:
 - `dreamwell_settings`: User settings and preferences
 
 The storage layer (`src/utils/localStorage.ts`) handles serialization/deserialization, including Date object conversions.
+
+### Testing Architecture
+
+The app has comprehensive test coverage using Vitest (unit) and Playwright (E2E):
+
+**Unit Testing (Vitest)**:
+- 78+ tests covering utils, components, and hooks
+- jsdom environment with comprehensive browser API mocks
+- Coverage reporting with v8 provider
+- Located in `src/test/` directory
+
+**E2E Testing (Playwright)**:
+- 60+ tests across Chrome, Firefox, and Safari
+- Mobile viewports (Pixel 5, iPhone 12) testing
+- WCAG 2.1 AA accessibility compliance with Axe integration
+- PWA offline functionality testing
+- Test files located in `tests/e2e/`
+
+### Internationalization (i18n)
+
+Multi-language support with i18next:
+- 4 languages: English (en), Portuguese (pt), Spanish (es), Slovak (sk)
+- Automatic language detection via localStorage and browser navigator
+- Persistent language preference
+- Translation files in `public/locales/`
 
 ### Routing Structure
 
@@ -94,12 +128,25 @@ src/
 └── utils/              # Business logic utilities
 ```
 
+### Build Configuration
+
+**Vite Configuration**:
+- Manual code splitting with optimized chunks:
+  - `vendor-react`: React core, React Router
+  - `vendor-radix`: All Radix UI components
+  - `vendor-recharts`: Charts and d3 dependencies
+  - `vendor-framer`: Animation library
+- Development server runs on port 8080 with IPv6 support
+- Path alias `@/` maps to `src/` directory
+- PWA support with service worker for offline functionality
+
 ### Styling Conventions
 
 - Uses Tailwind CSS with custom design tokens defined in `tailwind.config.ts`
 - shadcn-ui components follow a consistent pattern with `cn()` utility for class merging
 - Theme support (dark/light/auto) managed via SleepContext and applied to document root
-- Path alias `@/` maps to `src/` directory
+- Inter font for UI text, DM Sans for headings
+- Custom sleep-themed color palette with CSS variables
 
 ## Working with Data
 
@@ -118,7 +165,24 @@ The `src/components/ui/` directory contains auto-generated shadcn-ui components.
 
 ## Key Conventions
 
-- TypeScript strict mode is partially disabled (see `tsconfig.json`) - `noImplicitAny`, `strictNullChecks`, `noUnusedLocals`, and `noUnusedParameters` are set to false
+### TypeScript Configuration
+- Two-tier configuration: `tsconfig.json` (strict) and `tsconfig.app.json` (strict disabled)
+- Development prioritizes rapid iteration over strict typing
+- `noImplicitAny`, `strictNullChecks`, `noUnusedLocals`, and `noUnusedParameters` are disabled
+
+### Development Practices
 - Use Lucide React for icons
-- Toast notifications use both shadcn Toaster and Sonner for different use cases
-- Server runs on port 8080 with IPv6 support enabled
+- Toast notifications: shadcn Toaster for general notifications, Sonner for form feedback
+- Run `npm test` before commits to ensure unit tests pass
+- E2E tests cover complete user journeys - run with `npm run test:e2e` before major releases
+- Accessibility compliance is mandatory - all features must meet WCAG 2.1 AA standards
+
+### Platform Integration
+- Project linked to Lovable.dev for deployment
+- `lovable-tagger` plugin provides component tagging in development
+- PWA functionality enabled with offline support
+
+### Security & Privacy
+- All data encrypted with crypto-js before localStorage storage
+- No server-side data storage - complete privacy
+- Export/import functionality for data portability

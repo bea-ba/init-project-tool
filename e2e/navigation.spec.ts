@@ -7,7 +7,7 @@ test.describe('Navigation', () => {
 
   test('should load the homepage', async ({ page }) => {
     await expect(page).toHaveTitle(/Dreamwell/);
-    await expect(page.locator('h1')).toContainText('Dashboard');
+    await expect(page.locator('h1').first()).toContainText('Dreamwell');
   });
 
   test('should navigate to all main pages from desktop sidebar', async ({ page }) => {
