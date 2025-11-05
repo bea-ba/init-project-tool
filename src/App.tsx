@@ -58,23 +58,25 @@ const App = () => {
             <AlarmNotificationBar />
             <BrowserRouter>
               <SkipLinks />
-              <div className="flex">
+              <div className="flex min-h-screen">
                 <DesktopSidebar />
-                <main id="main-content" className="flex-1" role="main" aria-label="Main content">
-                  <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/sleep-tracker" element={<SleepTracker />} />
-                      <Route path="/alarm-setup" element={<AlarmSetup />} />
-                      <Route path="/sleep-history" element={<SleepHistory />} />
-                      <Route path="/sleep-notes" element={<SleepNotes />} />
-                      <Route path="/insights" element={<Insights />} />
-                      <Route path="/sounds" element={<Sounds />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/premium" element={<Premium />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Suspense>
+                <main id="main-content" className="flex-1 w-full min-w-0 overflow-x-hidden" role="main" aria-label="Main content">
+                  <div className="max-w-full">
+                    <Suspense fallback={<PageLoader />}>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/sleep-tracker" element={<SleepTracker />} />
+                        <Route path="/alarm-setup" element={<AlarmSetup />} />
+                        <Route path="/sleep-history" element={<SleepHistory />} />
+                        <Route path="/sleep-notes" element={<SleepNotes />} />
+                        <Route path="/insights" element={<Insights />} />
+                        <Route path="/sounds" element={<Sounds />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/premium" element={<Premium />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </div>
                 </main>
               </div>
               <Navigation />

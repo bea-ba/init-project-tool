@@ -112,20 +112,20 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6">
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
-          <Button variant="ghost" onClick={() => navigate('/')} className="md:hidden">
+    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+      <div className="w-full px-4 sm:px-6 md:max-w-4xl md:mx-auto">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold truncate pr-2">{t('settings.title')}</h1>
+          <Button variant="ghost" onClick={() => navigate('/')} className="md:hidden flex-shrink-0">
             {t('common.back')}
           </Button>
         </div>
 
         {/* Language Selector */}
-        <Card className="p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold mb-1">{t('settings.language')}</h2>
+        <Card className="p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg sm:text-xl font-semibold mb-1">{t('settings.language')}</h2>
               <p className="text-sm text-muted-foreground">
                 Choose your preferred language
               </p>
@@ -135,8 +135,8 @@ const Settings = () => {
         </Card>
 
         {/* Sleep Goals */}
-        <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Sleep Goals</h2>
+        <Card className="p-4 sm:p-6 mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">Sleep Goals</h2>
 
           <div className="space-y-6">
             <div>
@@ -154,7 +154,7 @@ const Settings = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="bedtime">Ideal Bedtime</Label>
                 <Input
@@ -162,7 +162,7 @@ const Settings = () => {
                   type="time"
                   value={settings.idealBedtime}
                   onChange={(e) => updateSettings({ ...settings, idealBedtime: e.target.value })}
-                  className="mt-2"
+                  className="mt-2 w-full"
                 />
               </div>
               <div>
@@ -172,7 +172,7 @@ const Settings = () => {
                   type="time"
                   value={settings.idealWakeTime}
                   onChange={(e) => updateSettings({ ...settings, idealWakeTime: e.target.value })}
-                  className="mt-2"
+                  className="mt-2 w-full"
                 />
               </div>
             </div>
@@ -184,10 +184,10 @@ const Settings = () => {
         </Card>
 
         {/* Appearance */}
-        <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Appearance</h2>
+        <Card className="p-4 sm:p-6 mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">Appearance</h2>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <button
               onClick={() => handleThemeChange('light')}
               className={`p-4 rounded-lg border-2 transition-all ${

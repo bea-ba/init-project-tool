@@ -43,8 +43,8 @@ const Dashboard = () => {
       <WelcomeModal open={showOnboarding} onComplete={completeOnboarding} />
 
       <PageTransition>
-        <div className="min-h-screen bg-background pb-32 md:pb-6">
-          <div className="max-w-6xl mx-auto p-6">
+        <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+          <div className="w-full px-4 sm:px-6 md:max-w-6xl md:mx-auto">
             {/* Header */}
             <FadeIn>
               <div className="mb-8">

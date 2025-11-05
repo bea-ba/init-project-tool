@@ -74,10 +74,10 @@ const AlarmSetup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6">
-      <div className="max-w-2xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Smart Alarm</h1>
+    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+      <div className="w-full px-4 sm:px-6 md:max-w-2xl md:mx-auto">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold truncate pr-2">Smart Alarm</h1>
           <Button variant="ghost" onClick={() => navigate('/')}>
             Cancel
           </Button>

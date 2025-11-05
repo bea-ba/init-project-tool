@@ -78,7 +78,7 @@ const SleepNotes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6">
+    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
       <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Sleep Note</h1>
