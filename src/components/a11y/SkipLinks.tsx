@@ -8,7 +8,7 @@ export const SkipLinks = () => {
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <a href="#navigation" className="skip-link">
+      <a href="#desktop-navigation" className="skip-link">
         Skip to navigation
       </a>
     </div>

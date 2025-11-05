@@ -66,7 +66,7 @@ export const WelcomeModal = ({ open, onComplete }: WelcomeModalProps) => {
   const Icon = step.icon;
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onComplete()}>
       <DialogContent className="max-w-md p-0 overflow-hidden border-slate-700 bg-gradient-to-br from-slate-900 to-slate-800">
         <div className="relative p-8">
           {/* Progress dots */}

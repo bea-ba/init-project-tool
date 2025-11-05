@@ -5,6 +5,16 @@ test.describe('Sleep Notes', () => {
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
     await page.reload();
+
+    // Dismiss WelcomeModal if it's present
+    const modal = page.locator('[role="dialog"]').first();
+    if (await modal.isVisible()) {
+      await page.keyboard.press('Escape');
+    }
+
+    // Wait a bit for modal to close
+    await page.waitForTimeout(100);
+
     await page.click('a[href="/sleep-notes"]');
   });
 

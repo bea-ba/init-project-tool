@@ -20,7 +20,7 @@ export const Navigation = () => {
 
   return (
     <nav
-      id="navigation"
+      id="mobile-navigation"
       className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 md:hidden"
       role="navigation"
       aria-label="Mobile navigation"
@@ -59,7 +59,7 @@ export const DesktopSidebar = () => {
 
   return (
     <aside
-      id="navigation"
+      id="desktop-navigation"
       className="hidden md:flex flex-col w-64 bg-card border-r border-border min-h-screen sticky top-0"
       role="navigation"
       aria-label="Main navigation"

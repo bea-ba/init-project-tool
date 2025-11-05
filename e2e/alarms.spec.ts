@@ -5,11 +5,21 @@ test.describe('Alarm Setup', () => {
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
     await page.reload();
+
+    // Dismiss WelcomeModal if it's present
+    const modal = page.locator('[role="dialog"]').first();
+    if (await modal.isVisible()) {
+      await page.keyboard.press('Escape');
+    }
+
+    // Wait a bit for modal to close
+    await page.waitForTimeout(100);
+
     await page.click('a[href="/alarm-setup"]');
   });
 
   test('should create a new alarm', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('Alarm Setup');
+    await expect(page.locator('h1')).toContainText('Smart Alarm');
 
     // Find and fill alarm time input
     const timeInput = page.locator('input[type="time"]').first();

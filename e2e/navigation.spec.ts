@@ -14,6 +14,13 @@ test.describe('Navigation', () => {
     // Test desktop navigation (viewport > 768px)
     await page.setViewportSize({ width: 1280, height: 720 });
 
+    // Dismiss WelcomeModal if it's present
+    const modal = page.locator('[role="dialog"]').first();
+    if (await modal.isVisible()) {
+      await page.keyboard.press('Escape');
+    }
+    await page.waitForTimeout(100);
+
     const routes = [
       { path: '/sleep-tracker', heading: 'Sleep Tracker' },
       { path: '/alarm-setup', heading: 'Alarm Setup' },
@@ -26,7 +33,8 @@ test.describe('Navigation', () => {
     ];
 
     for (const route of routes) {
-      await page.click(`a[href="${route.path}"]`);
+      // Use desktop navigation selector to avoid conflicts with mobile nav
+      await page.click(`#desktop-navigation a[href="${route.path}"]`);
       await expect(page.locator('h1, h2').first()).toContainText(route.heading);
     }
   });
@@ -44,7 +52,8 @@ test.describe('Navigation', () => {
     ];
 
     for (const route of mobileRoutes) {
-      await page.click(`nav a[href="${route.path}"]`);
+      // Use mobile navigation selector to be specific
+      await page.click(`#mobile-navigation a[href="${route.path}"]`);
       await expect(page).toHaveURL(route.path);
     }
   });
@@ -70,8 +79,15 @@ test.describe('Navigation', () => {
   test('should maintain active state on navigation links', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
 
-    await page.click('a[href="/sleep-tracker"]');
-    const activeLink = page.locator('a[href="/sleep-tracker"]');
+    // Dismiss WelcomeModal if it's present
+    const modal = page.locator('[role="dialog"]').first();
+    if (await modal.isVisible()) {
+      await page.keyboard.press('Escape');
+    }
+    await page.waitForTimeout(100);
+
+    await page.click('#desktop-navigation a[href="/sleep-tracker"]');
+    const activeLink = page.locator('#desktop-navigation a[href="/sleep-tracker"]');
     await expect(activeLink).toHaveClass(/text-primary/);
   });
 });
