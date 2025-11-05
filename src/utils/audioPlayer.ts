@@ -1,8 +1,24 @@
 import { Howl } from 'howler';
 
-// Free sound URLs from Freesound.org and similar sources
-// These are public domain or CC0 licensed sounds
-export const SOUND_LIBRARY = {
+// Sound library with local files (primary) and CDN fallbacks
+// Local files should be placed in public/sounds/ directory
+// See public/sounds/AUDIO_SOURCES.md for download instructions
+const SOUND_LIBRARY_LOCAL = {
+  rain: '/sounds/rain.mp3',
+  ocean: '/sounds/ocean.mp3',
+  forest: '/sounds/forest.mp3',
+  'white-noise': '/sounds/white-noise.mp3',
+  thunderstorm: '/sounds/thunderstorm.mp3',
+  'pink-noise': '/sounds/pink-noise.mp3',
+  piano: '/sounds/piano.mp3',
+  strings: '/sounds/strings.mp3',
+  'gentle-wake': '/sounds/gentle-wake.mp3',
+  'morning-birds': '/sounds/morning-birds.mp3',
+};
+
+// CDN fallback URLs from Freesound.org (CC0/Public Domain)
+// Used if local files are not available
+const SOUND_LIBRARY_CDN = {
   rain: 'https://cdn.freesound.org/previews/513/513828_5121236-lq.mp3',
   ocean: 'https://cdn.freesound.org/previews/234/234524_3905908-lq.mp3',
   forest: 'https://cdn.freesound.org/previews/416/416529_5121236-lq.mp3',
@@ -11,10 +27,12 @@ export const SOUND_LIBRARY = {
   'pink-noise': 'https://cdn.freesound.org/previews/411/411089_5121236-lq.mp3',
   piano: 'https://cdn.freesound.org/previews/456/456966_9497060-lq.mp3',
   strings: 'https://cdn.freesound.org/previews/411/411459_2166768-lq.mp3',
-  // Alarm sounds
   'gentle-wake': 'https://cdn.freesound.org/previews/320/320655_5260872-lq.mp3',
   'morning-birds': 'https://cdn.freesound.org/previews/456/456965_9497060-lq.mp3',
 };
+
+// Export combined sound library (tries local first, falls back to CDN)
+export const SOUND_LIBRARY = SOUND_LIBRARY_LOCAL;
 
 export type SoundId = keyof typeof SOUND_LIBRARY;
 
@@ -30,7 +48,7 @@ class AudioPlayerService {
   private sleepTimer: NodeJS.Timeout | null = null;
 
   /**
-   * Initialize a sound
+   * Initialize a sound with local file and CDN fallback
    */
   private initSound(soundId: SoundId): Howl {
     const existingState = this.players.get(soundId);
@@ -38,16 +56,22 @@ class AudioPlayerService {
       return existingState.howl;
     }
 
+    // Try local file first, fallback to CDN if it fails
+    const sources = [
+      SOUND_LIBRARY[soundId],           // Local file
+      SOUND_LIBRARY_CDN[soundId as keyof typeof SOUND_LIBRARY_CDN], // CDN fallback
+    ];
+
     const howl = new Howl({
-      src: [SOUND_LIBRARY[soundId]],
+      src: sources,
       loop: true,
       volume: 0.7,
       html5: true, // Use HTML5 Audio for better mobile support
       onload: () => {
-        console.log(`Sound ${soundId} loaded`);
+        console.log(`Sound ${soundId} loaded successfully`);
       },
       onloaderror: (id, error) => {
-        console.error(`Failed to load sound ${soundId}:`, error);
+        console.warn(`Failed to load sound ${soundId} from primary source, trying fallback:`, error);
       },
       onplayerror: (id, error) => {
         console.error(`Failed to play sound ${soundId}:`, error);
