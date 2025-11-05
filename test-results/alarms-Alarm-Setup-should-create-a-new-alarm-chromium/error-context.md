@@ -1,0 +1,87 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic:
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - link "Skip to navigation" [ref=e4] [cursor=pointer]:
+      - /url: "#desktop-navigation"
+  - generic [ref=e5]:
+    - navigation "Main navigation" [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Dreamwell" [level=1] [ref=e8]
+        - paragraph [ref=e9]: Rest Deeply, Live Fully
+      - menu "Main menu" [ref=e10]:
+        - menuitem "Navigate to Home" [ref=e11] [cursor=pointer]:
+          - img [ref=e12]
+          - generic [ref=e15]: Home
+        - menuitem "Navigate to Track" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+          - generic [ref=e19]: Track
+        - menuitem "Navigate to Alarm" [active] [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+          - generic [ref=e28]: Alarm
+        - menuitem "Navigate to History" [ref=e29] [cursor=pointer]:
+          - img [ref=e30]
+          - generic [ref=e32]: History
+        - menuitem "Navigate to Notes" [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+          - generic [ref=e36]: Notes
+        - menuitem "Navigate to Insights" [ref=e37] [cursor=pointer]:
+          - img [ref=e38]
+          - generic [ref=e40]: Insights
+        - menuitem "Navigate to Sounds" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+          - generic [ref=e46]: Sounds
+        - menuitem "Navigate to Settings" [ref=e47] [cursor=pointer]:
+          - img [ref=e48]
+          - generic [ref=e51]: Settings
+        - menuitem "Navigate to Premium" [ref=e52] [cursor=pointer]:
+          - img [ref=e53]
+          - generic [ref=e55]: Premium
+    - main "Main content" [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - heading "Smart Alarm" [level=1] [ref=e60]
+          - button "Cancel" [ref=e61] [cursor=pointer]
+        - generic [ref=e62]:
+          - img [ref=e64]
+          - textbox [ref=e71]: 07:00
+        - generic [ref=e72]:
+          - text: Alarm Label
+          - textbox "Alarm Label" [ref=e73]:
+            - /placeholder: e.g., Workday, Weekend
+          - paragraph [ref=e74]: 0/100 characters
+        - generic [ref=e75]:
+          - generic [ref=e76]: Repeat on
+          - generic [ref=e77]:
+            - button "S" [ref=e78] [cursor=pointer]
+            - button "M" [ref=e79] [cursor=pointer]
+            - button "T" [ref=e80] [cursor=pointer]
+            - button "W" [ref=e81] [cursor=pointer]
+            - button "T" [ref=e82] [cursor=pointer]
+            - button "F" [ref=e83] [cursor=pointer]
+            - button "S" [ref=e84] [cursor=pointer]
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - img [ref=e88]
+              - generic [ref=e91]:
+                - text: Smart Wake
+                - paragraph [ref=e92]: Wake you during light sleep
+            - switch [checked] [ref=e93] [cursor=pointer]
+          - generic [ref=e94]:
+            - generic [ref=e95]: "Wake Window: 15 minutes"
+            - slider [ref=e100]
+            - paragraph [ref=e101]: Alarm can trigger up to 15 minutes before 07:00
+        - generic [ref=e103]:
+          - generic [ref=e104]:
+            - img [ref=e105]
+            - generic [ref=e109]: Vibration
+          - switch [checked] [ref=e110] [cursor=pointer]
+        - button "Save Alarm" [ref=e111] [cursor=pointer]
+```
