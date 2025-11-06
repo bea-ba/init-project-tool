@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { formatDuration, getQualityColor } from '@/utils/sleepCalculations';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, LineChart, Line } from 'recharts';
 import { Calendar, Moon, TrendingUp } from 'lucide-react';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const SleepHistory = () => {
   const { sessions, settings } = useSleep();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const completedSessions = sessions
     .filter(s => s.endTime)
@@ -29,12 +31,12 @@ const SleepHistory = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background pb-20 md:pb-6 overflow-x-hidden">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Sleep History</h1>
+          <h1 className="text-2xl font-bold">{t('history.title')}</h1>
           <Button variant="ghost" onClick={() => navigate('/')}>
-            Back
+            {t('common.back')}
           </Button>
         </div>
 
@@ -43,7 +45,7 @@ const SleepHistory = () => {
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-2">
               <Moon className="w-5 h-5 text-primary" />
-              <p className="text-sm text-muted-foreground">Average Duration</p>
+              <p className="text-sm text-muted-foreground">{t('history.averageDuration')}</p>
             </div>
             <p className="text-3xl font-bold">{formatDuration(avgDuration)}</p>
           </Card>
@@ -51,7 +53,7 @@ const SleepHistory = () => {
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp className="w-5 h-5 text-success" />
-              <p className="text-sm text-muted-foreground">Average Quality</p>
+              <p className="text-sm text-muted-foreground">{t('history.averageQuality')}</p>
             </div>
             <p className={`text-3xl font-bold ${getQualityColor(avgQuality)}`}>
               {Math.round(avgQuality)}%
@@ -61,7 +63,7 @@ const SleepHistory = () => {
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-2">
               <Calendar className="w-5 h-5 text-secondary" />
-              <p className="text-sm text-muted-foreground">Total Nights</p>
+              <p className="text-sm text-muted-foreground">{t('history.totalSessions')}</p>
             </div>
             <p className="text-3xl font-bold">{completedSessions.length}</p>
           </Card>
@@ -70,7 +72,7 @@ const SleepHistory = () => {
         {/* Duration Chart */}
         {chartData.length > 0 && (
           <Card className="p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Sleep Duration</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('history.sleepDuration')}</h2>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={chartData}>
                 <XAxis 
@@ -88,7 +90,7 @@ const SleepHistory = () => {
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
                   }}
-                  formatter={(value: number) => [`${value.toFixed(1)}h`, 'Duration']}
+                  formatter={(value: number) => [`${value.toFixed(1)}h`, t('history.duration')]}
                 />
                 <Bar dataKey="hours" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -99,7 +101,7 @@ const SleepHistory = () => {
         {/* Quality Chart */}
         {chartData.length > 0 && (
           <Card className="p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Sleep Quality Trend</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('history.qualityTrend')}</h2>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chartData}>
                 <XAxis 
@@ -118,7 +120,7 @@ const SleepHistory = () => {
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
                   }}
-                  formatter={(value: number) => [`${value}%`, 'Quality']}
+                  formatter={(value: number) => [`${value}%`, t('history.quality')]}
                 />
                 <Line 
                   type="monotone" 
@@ -134,7 +136,7 @@ const SleepHistory = () => {
 
         {/* Recent Sessions */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Nights</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('history.recentNights')}</h2>
           <div className="space-y-4">
             {completedSessions.slice(0, 10).map((session) => (
               <div
@@ -150,14 +152,14 @@ const SleepHistory = () => {
                     })}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {formatDuration(session.duration)} • {session.interruptions} interruptions
+                    {formatDuration(session.duration)} • {session.interruptions} {t('history.interruptions', { count: session.interruptions })}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className={`text-2xl font-bold ${getQualityColor(session.quality)}`}>
                     {session.quality}%
                   </p>
-                  <p className="text-xs text-muted-foreground">Quality</p>
+                  <p className="text-xs text-muted-foreground">{t('history.quality')}</p>
                 </div>
               </div>
             ))}

@@ -1,6 +1,12 @@
 import { SleepSession, Alarm, SleepNote, UserSettings } from '@/types/sleep';
 import { SerializedSleepSession, SerializedSleepNote, SerializedUserSettings } from '@/types/serialized';
 import { encryptData, decryptData } from './encryption';
+import {
+  validateSleepSession,
+  validateAlarm,
+  validateSleepNote,
+  validateUserSettings
+} from './validation';
 import { toast } from 'sonner';
 
 const STORAGE_KEYS = {
@@ -76,16 +82,44 @@ export const storage = {
     const data = safeGetItem(STORAGE_KEYS.SLEEP_SESSIONS, true);
     if (!data) return [];
 
-    const sessions = safeJSONParse<SerializedSleepSession[]>(data, []);
+    const serializedSessions = safeJSONParse<SerializedSleepSession[]>(data, []);
 
-    return sessions.map((session) => ({
-      ...session,
-      startTime: new Date(session.startTime),
-      endTime: session.endTime ? new Date(session.endTime) : null,
-    }));
+    const validSessions: SleepSession[] = [];
+    const invalidSessions: any[] = [];
+
+    serializedSessions.forEach((session, index) => {
+      const sessionWithDates = {
+        ...session,
+        startTime: new Date(session.startTime),
+        endTime: session.endTime ? new Date(session.endTime) : null,
+      };
+
+      const validation = validateSleepSession(sessionWithDates);
+      if (validation.success) {
+        validSessions.push(sessionWithDates);
+      } else {
+        invalidSessions.push({ index, session, errors: validation.error.issues });
+        console.warn(`Invalid sleep session at index ${index}:`, validation.error.issues);
+      }
+    });
+
+    if (invalidSessions.length > 0) {
+      console.warn(`Filtered out ${invalidSessions.length} invalid sleep sessions`);
+      toast.warning(`Some sleep sessions were corrupted and have been removed (${invalidSessions.length} items)`);
+    }
+
+    return validSessions;
   },
 
   saveSleepSession: (session: SleepSession): void => {
+    // Validate session data before saving
+    const validation = validateSleepSession(session);
+    if (!validation.success) {
+      const errorMessages = validation.error.issues.map(i => i.message).join(', ');
+      toast.error(`Invalid sleep session data: ${errorMessages}`);
+      throw new Error(`Validation failed: ${errorMessages}`);
+    }
+
     try {
       const sessions = storage.getSleepSessions();
       const existingIndex = sessions.findIndex(s => s.id === session.id);
@@ -119,10 +153,37 @@ export const storage = {
     const data = safeGetItem(STORAGE_KEYS.ALARMS, true);
     if (!data) return [];
 
-    return safeJSONParse<Alarm[]>(data, []);
+    const alarms = safeJSONParse<Alarm[]>(data, []);
+    const validAlarms: Alarm[] = [];
+    const invalidAlarms: any[] = [];
+
+    alarms.forEach((alarm, index) => {
+      const validation = validateAlarm(alarm);
+      if (validation.success) {
+        validAlarms.push(alarm);
+      } else {
+        invalidAlarms.push({ index, alarm, errors: validation.error.issues });
+        console.warn(`Invalid alarm at index ${index}:`, validation.error.issues);
+      }
+    });
+
+    if (invalidAlarms.length > 0) {
+      console.warn(`Filtered out ${invalidAlarms.length} invalid alarms`);
+      toast.warning(`Some alarms were corrupted and have been removed (${invalidAlarms.length} items)`);
+    }
+
+    return validAlarms;
   },
 
   saveAlarm: (alarm: Alarm): void => {
+    // Validate alarm data before saving
+    const validation = validateAlarm(alarm);
+    if (!validation.success) {
+      const errorMessages = validation.error.issues.map(i => i.message).join(', ');
+      toast.error(`Invalid alarm data: ${errorMessages}`);
+      throw new Error(`Validation failed: ${errorMessages}`);
+    }
+
     try {
       const alarms = storage.getAlarms();
       const existingIndex = alarms.findIndex(a => a.id === alarm.id);
@@ -156,15 +217,42 @@ export const storage = {
     const data = safeGetItem(STORAGE_KEYS.NOTES, true);
     if (!data) return [];
 
-    const notes = safeJSONParse<SerializedSleepNote[]>(data, []);
+    const serializedNotes = safeJSONParse<SerializedSleepNote[]>(data, []);
+    const validNotes: SleepNote[] = [];
+    const invalidNotes: any[] = [];
 
-    return notes.map((note) => ({
-      ...note,
-      date: new Date(note.date),
-    }));
+    serializedNotes.forEach((note, index) => {
+      const noteWithDate = {
+        ...note,
+        date: new Date(note.date),
+      };
+
+      const validation = validateSleepNote(noteWithDate);
+      if (validation.success) {
+        validNotes.push(noteWithDate);
+      } else {
+        invalidNotes.push({ index, note, errors: validation.error.issues });
+        console.warn(`Invalid sleep note at index ${index}:`, validation.error.issues);
+      }
+    });
+
+    if (invalidNotes.length > 0) {
+      console.warn(`Filtered out ${invalidNotes.length} invalid sleep notes`);
+      toast.warning(`Some sleep notes were corrupted and have been removed (${invalidNotes.length} items)`);
+    }
+
+    return validNotes;
   },
 
   saveNote: (note: SleepNote): void => {
+    // Validate note data before saving
+    const validation = validateSleepNote(note);
+    if (!validation.success) {
+      const errorMessages = validation.error.issues.map(i => i.message).join(', ');
+      toast.error(`Invalid sleep note data: ${errorMessages}`);
+      throw new Error(`Validation failed: ${errorMessages}`);
+    }
+
     try {
       const notes = storage.getNotes();
       const existingIndex = notes.findIndex(n => n.id === note.id);
@@ -214,7 +302,7 @@ export const storage = {
       };
     }
 
-    const settings = safeJSONParse<SerializedUserSettings>(data, {
+    const serializedSettings = safeJSONParse<SerializedUserSettings>(data, {
       sleepGoal: 480,
       idealBedtime: '22:00',
       idealWakeTime: '06:00',
@@ -229,13 +317,43 @@ export const storage = {
       dataBackup: null,
     });
 
-    return {
-      ...settings,
-      dataBackup: settings.dataBackup ? new Date(settings.dataBackup) : null,
+    const settings = {
+      ...serializedSettings,
+      dataBackup: serializedSettings.dataBackup ? new Date(serializedSettings.dataBackup) : null,
     };
+
+    const validation = validateUserSettings(settings);
+    if (!validation.success) {
+      console.warn('Invalid settings found in storage:', validation.error.issues);
+      toast.warning('Settings were corrupted and have been reset to defaults');
+      return {
+        sleepGoal: 480, // 8 hours
+        idealBedtime: '22:00',
+        idealWakeTime: '06:00',
+        theme: 'dark',
+        notifications: {
+          alarms: true,
+          bedtimeReminder: true,
+          weeklyReport: true,
+        },
+        premium: false,
+        soundRecording: false,
+        dataBackup: null,
+      };
+    }
+
+    return settings;
   },
 
   saveSettings: (settings: UserSettings): void => {
+    // Validate settings data before saving
+    const validation = validateUserSettings(settings);
+    if (!validation.success) {
+      const errorMessages = validation.error.issues.map(i => i.message).join(', ');
+      toast.error(`Invalid settings data: ${errorMessages}`);
+      throw new Error(`Validation failed: ${errorMessages}`);
+    }
+
     try {
       safeSetItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings), true);
     } catch (error) {

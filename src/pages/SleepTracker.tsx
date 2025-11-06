@@ -7,12 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import { generateSleepPhases, calculateSleepQuality } from '@/utils/sleepCalculations';
 import { generateSecureId } from '@/utils/encryption';
 import { useScreenReader, ScreenReaderAnnouncer } from '@/hooks/useScreenReader';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const SleepTracker = () => {
   const { activeSleep, startSleep, stopSleep, addSession, sessions } = useSleep();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const { announcement, announce } = useScreenReader();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -42,7 +44,7 @@ const SleepTracker = () => {
       },
     };
     startSleep(newSession);
-    announce('Sleep tracking started. Sweet dreams!');
+    announce(t('sleepTracker.announceStart'));
   };
 
   const handleStopSleep = () => {
@@ -68,7 +70,7 @@ const SleepTracker = () => {
     stopSleep();
     const hours = Math.floor(duration / 60);
     const mins = duration % 60;
-    announce(`Sleep tracking stopped. You slept for ${hours} hours and ${mins} minutes. Quality score: ${completedSession.quality}%.`);
+    announce(t('sleepTracker.announceStop', { hours, minutes: mins, quality: completedSession.quality }));
     navigate('/');
   };
 
@@ -82,13 +84,13 @@ const SleepTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 pb-32 md:pb-6">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-background to-primary/5 pb-20 md:pb-6">
       <ScreenReaderAnnouncer announcement={announcement} />
       <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Sleep Tracker</h1>
+          <h1 className="text-2xl font-bold">{t('sleepTracker.title')}</h1>
           <Button variant="ghost" onClick={() => navigate('/')} aria-label="Go back to dashboard">
-            Back
+            {t('common.back')}
           </Button>
         </div>
 
@@ -103,7 +105,7 @@ const SleepTracker = () => {
             {activeSleep ? (
               <>
                 <div className="text-center" role="timer" aria-live="off" aria-atomic="true">
-                  <p className="text-sm text-muted-foreground mb-2" id="sleep-duration-label">Sleep Duration</p>
+                  <p className="text-sm text-muted-foreground mb-2" id="sleep-duration-label">{t('sleepTracker.sleepDuration')}</p>
                   <p
                     className="text-5xl font-bold tracking-wider"
                     aria-labelledby="sleep-duration-label"
@@ -114,15 +116,15 @@ const SleepTracker = () => {
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    Started at {activeSleep.startTime.toLocaleTimeString()}
+                    {t('sleepTracker.startedAt', { time: activeSleep.startTime.toLocaleTimeString() })}
                   </p>
                 </div>
               </>
             ) : (
             <div className="text-center">
-              <p className="text-2xl font-semibold mb-2">Ready for Restful Sleep?</p>
+              <p className="text-2xl font-semibold mb-2">{t('sleepTracker.ready')}</p>
               <p className="text-muted-foreground">
-                Begin tracking to discover your sleep patterns
+                {t('sleepTracker.description')}
               </p>
             </div>
             )}
@@ -131,16 +133,16 @@ const SleepTracker = () => {
 
         {activeSleep && (
           <Card className="p-6 mb-6">
-            <h3 className="font-semibold mb-4">Sleep Phase</h3>
+            <h3 className="font-semibold mb-4">{t('sleepTracker.sleepPhase')}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Light Sleep</span>
+                <span className="text-sm">{t('sleepTracker.lightSleep')}</span>
                 <div className="w-48 h-2 bg-muted rounded-full overflow-hidden">
                   <div className="h-full bg-primary/50 animate-pulse" style={{ width: '60%' }} />
                 </div>
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                Monitoring your sleep patterns...
+                {t('sleepTracker.monitoring')}
               </p>
             </div>
           </Card>
@@ -156,7 +158,7 @@ const SleepTracker = () => {
               aria-label="Stop sleep tracking"
             >
               <Square className="w-6 h-6 mr-2" aria-hidden="true" />
-              Stop Tracking
+              {t('sleepTracker.stopTracking')}
             </Button>
           ) : (
           <Button
@@ -166,7 +168,7 @@ const SleepTracker = () => {
             aria-label="Start sleep tracking"
           >
             <Moon className="w-6 h-6 mr-2" aria-hidden="true" />
-            Begin Sleep Journey
+            {t('sleepTracker.beginJourney')}
           </Button>
           )}
         </div>

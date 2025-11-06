@@ -112,7 +112,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background pb-20 md:pb-6 overflow-x-hidden">
       <div className="w-full px-4 sm:px-6 md:max-w-4xl md:mx-auto">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-2xl font-bold truncate pr-2">{t('settings.title')}</h1>
@@ -136,11 +136,11 @@ const Settings = () => {
 
         {/* Sleep Goals */}
         <Card className="p-4 sm:p-6 mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold mb-4">Sleep Goals</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">{t('settings.sleepGoal')}</h2>
 
           <div className="space-y-6">
             <div>
-              <Label>Target Sleep Duration: {sleepGoalHours[0].toFixed(1)} hours</Label>
+              <Label>{t('settings.targetDuration')}: {sleepGoalHours[0].toFixed(1)} {t('dashboard.hours')}</Label>
               <Slider
                 value={sleepGoalHours}
                 onValueChange={setSleepGoalHours}
@@ -156,7 +156,7 @@ const Settings = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="bedtime">Ideal Bedtime</Label>
+                <Label htmlFor="bedtime">{t('settings.idealBedtime')}</Label>
                 <Input
                   id="bedtime"
                   type="time"
@@ -166,7 +166,7 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="waketime">Ideal Wake Time</Label>
+                <Label htmlFor="waketime">{t('settings.idealWakeTime')}</Label>
                 <Input
                   id="waketime"
                   type="time"
@@ -178,14 +178,14 @@ const Settings = () => {
             </div>
 
             <Button onClick={handleSaveGoal} className="w-full">
-              Save Sleep Goals
+              {t('settings.saveGoals')}
             </Button>
           </div>
         </Card>
 
         {/* Appearance */}
         <Card className="p-4 sm:p-6 mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold mb-4">Appearance</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">{t('settings.appearance')}</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <button
@@ -197,7 +197,7 @@ const Settings = () => {
               }`}
             >
               <Sun className="w-6 h-6 mx-auto mb-2" />
-              <p className="text-sm font-medium">Light</p>
+              <p className="text-sm font-medium">{t('settings.light')}</p>
             </button>
 
             <button
@@ -209,7 +209,7 @@ const Settings = () => {
               }`}
             >
               <Moon className="w-6 h-6 mx-auto mb-2" />
-              <p className="text-sm font-medium">Dark</p>
+              <p className="text-sm font-medium">{t('settings.dark')}</p>
             </button>
 
             <button
@@ -224,19 +224,19 @@ const Settings = () => {
                 <Sun className="w-3 h-3" />
                 <Moon className="w-3 h-3" />
               </div>
-              <p className="text-sm font-medium">Auto</p>
+              <p className="text-sm font-medium">{t('settings.auto')}</p>
             </button>
           </div>
         </Card>
 
         {/* Notifications */}
         <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Notifications</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('settings.notifications')}</h2>
 
           <div className="space-y-4">
             <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
               <p className="text-sm mb-3">
-                Enable browser notifications to receive alarms and bedtime reminders even when Dreamwell is not open.
+                {t('settings.pushNotificationsDesc')}
               </p>
               <Button
                 onClick={promptForNotificationPermission}
@@ -244,7 +244,7 @@ const Settings = () => {
                 className="w-full"
               >
                 <Bell className="w-4 h-4 mr-2" />
-                Enable Push Notifications
+                {t('settings.pushNotifications')}
               </Button>
             </div>
 
@@ -252,8 +252,8 @@ const Settings = () => {
               <div className="flex items-center gap-3">
                 <Bell className="w-5 h-5 text-primary" />
                 <div>
-                  <Label>Alarms</Label>
-                  <p className="text-sm text-muted-foreground">Enable alarm notifications</p>
+                  <Label>{t('settings.alarms')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.alarmsDesc')}</p>
                 </div>
               </div>
               <Switch
@@ -266,8 +266,8 @@ const Settings = () => {
               <div className="flex items-center gap-3">
                 <Moon className="w-5 h-5 text-primary" />
                 <div>
-                  <Label>Bedtime Reminder</Label>
-                  <p className="text-sm text-muted-foreground">Get reminded when it's time to sleep</p>
+                  <Label>{t('settings.bedtimeReminder')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.bedtimeReminderDesc')}</p>
                 </div>
               </div>
               <Switch
@@ -280,8 +280,8 @@ const Settings = () => {
               <div className="flex items-center gap-3">
                 <Bell className="w-5 h-5 text-primary" />
                 <div>
-                  <Label>Weekly Report</Label>
-                  <p className="text-sm text-muted-foreground">Receive weekly sleep summaries</p>
+                  <Label>{t('settings.weeklyReport')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.weeklyReportDesc')}</p>
                 </div>
               </div>
               <Switch
@@ -294,7 +294,7 @@ const Settings = () => {
 
         {/* Data & Privacy */}
         <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Data & Privacy</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('settings.dataPrivacy')}</h2>
 
           <div className="space-y-3">
             <div className="flex gap-3">
@@ -304,7 +304,7 @@ const Settings = () => {
                 onClick={handleExportJSON}
               >
                 <Download className="w-5 h-5 mr-3" />
-                Export JSON
+                {t('settings.exportJSON')}
               </Button>
 
               <Button
@@ -313,7 +313,7 @@ const Settings = () => {
                 onClick={handleExportCSV}
               >
                 <FileText className="w-5 h-5 mr-3" />
-                Export CSV
+                {t('settings.exportCSV')}
               </Button>
             </div>
 
@@ -323,7 +323,7 @@ const Settings = () => {
               onClick={handleImportClick}
             >
               <Upload className="w-5 h-5 mr-3" />
-              Import Data
+              {t('settings.importData')}
             </Button>
             <input
               ref={fileInputRef}
@@ -339,7 +339,7 @@ const Settings = () => {
               onClick={handleClearData}
             >
               <Trash2 className="w-5 h-5 mr-3" />
-              Clear All Data
+              {t('settings.clearAllData')}
             </Button>
 
             <Button
@@ -347,18 +347,16 @@ const Settings = () => {
               className="w-full justify-start"
             >
               <Shield className="w-5 h-5 mr-3" />
-              Privacy Policy
+              {t('settings.privacyPolicy')}
             </Button>
           </div>
         </Card>
 
         {/* About */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">About</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <p>Dreamwell v1.0.0</p>
-            <p>Crafted with intention for restorative rest</p>
-            <p>© 2025 Dreamwell. All rights reserved.</p>
+          <h2 className="text-xl font-semibold mb-4">{t('settings.about')}</h2>
+          <div className="space-y-2 text-sm text-muted-foreground whitespace-pre-line">
+            {t('settings.aboutDesc')}
           </div>
         </Card>
 

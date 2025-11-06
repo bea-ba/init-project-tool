@@ -33,7 +33,7 @@ const queryClient = new QueryClient();
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen bg-background pb-32 md:pb-6">
+  <div className="min-h-[100dvh] bg-background pb-20 md:pb-6">
     <div className="max-w-6xl mx-auto p-6">
       <DashboardSkeleton />
     </div>
@@ -60,8 +60,8 @@ const App = () => {
               <SkipLinks />
               <div className="flex min-h-screen">
                 <DesktopSidebar />
-                <main id="main-content" className="flex-1 w-full min-w-0 overflow-x-hidden" role="main" aria-label="Main content">
-                  <div className="max-w-full">
+                <main id="main-content" className="flex-1 w-full min-w-0 overflow-x-hidden md:overflow-y-auto" role="main" aria-label="Main content">
+                  <div className="max-w-full h-full">
                     <Suspense fallback={<PageLoader />}>
                       <Routes>
                         <Route path="/" element={<Dashboard />} />

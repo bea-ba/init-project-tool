@@ -9,19 +9,21 @@ import { toast } from 'sonner';
 import { Coffee, Dumbbell, Wine, Pizza, Brain, BookOpen } from 'lucide-react';
 import { generateSecureId } from '@/utils/encryption';
 import { sanitizeNoteText } from '@/utils/validation';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const TAGS = [
-  { id: 'exercise', label: 'Exercise', icon: Dumbbell },
-  { id: 'caffeine', label: 'Caffeine', icon: Coffee },
-  { id: 'alcohol', label: 'Alcohol', icon: Wine },
-  { id: 'heavy-meal', label: 'Heavy Meal', icon: Pizza },
-  { id: 'stress', label: 'Stressed', icon: Brain },
-  { id: 'reading', label: 'Read Before Bed', icon: BookOpen },
+  { id: 'exercise', label: 'Exercise', icon: Dumbbell, translationKey: 'notes.exercise' },
+  { id: 'caffeine', label: 'Caffeine', icon: Coffee, translationKey: 'notes.caffeine' },
+  { id: 'alcohol', label: 'Alcohol', icon: Wine, translationKey: 'notes.alcohol' },
+  { id: 'heavy-meal', label: 'Heavy Meal', icon: Pizza, translationKey: 'notes.heavyMeal' },
+  { id: 'stress', label: 'Stressed', icon: Brain, translationKey: 'notes.stress' },
+  { id: 'reading', label: 'Read Before Bed', icon: BookOpen, translationKey: 'notes.reading' },
 ];
 
 const SleepNotes = () => {
   const { addNote } = useSleep();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   const [text, setText] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -32,17 +34,17 @@ const SleepNotes = () => {
     const sanitizedText = sanitizeNoteText(text);
 
     if (!sanitizedText.trim()) {
-      toast.error('Please add some notes');
+      toast.error(t('notes.addNotesError'));
       return;
     }
 
     if (sanitizedText.length > 1000) {
-      toast.error('Note is too long. Maximum 1000 characters allowed.');
+      toast.error(t('notes.noteTooLong'));
       return;
     }
 
     if (selectedTags.length > 10) {
-      toast.error('Maximum 10 tags allowed');
+      toast.error(t('notes.maxTagsError'));
       return;
     }
 
@@ -65,7 +67,7 @@ const SleepNotes = () => {
     };
 
     addNote(note);
-    toast.success('Note saved successfully!');
+    toast.success(t('notes.noteSaved'));
     navigate('/');
   };
 
@@ -78,32 +80,32 @@ const SleepNotes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background pb-20 md:pb-6 overflow-x-hidden">
       <div className="max-w-2xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Sleep Note</h1>
+          <h1 className="text-2xl font-bold">{t('notes.title')}</h1>
           <Button variant="ghost" onClick={() => navigate('/')}>
-            Cancel
+            {t('common.cancel')}
           </Button>
         </div>
 
         <Card className="p-6 mb-6">
-          <Label htmlFor="notes">How was your rest?</Label>
+          <Label htmlFor="notes">{t('notes.howWasYourRest')}</Label>
           <Textarea
             id="notes"
-            placeholder="Reflect on your sleep experience, dreams, or moments that influenced your rest..."
+            placeholder={t('notes.placeholder')}
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="mt-2 min-h-[120px]"
             maxLength={1000}
           />
           <p className="text-xs text-muted-foreground mt-2">
-            {text.length}/1000 characters
+            {t('notes.characterCount', { count: text.length })}
           </p>
         </Card>
 
         <Card className="p-6 mb-6">
-          <Label className="mb-4 block">Activities & Factors</Label>
+          <Label className="mb-4 block">{t('notes.activities')}</Label>
           <div className="grid grid-cols-2 gap-3">
             {TAGS.map((tag) => {
               const Icon = tag.icon;
@@ -120,7 +122,7 @@ const SleepNotes = () => {
                 >
                   <Icon className={`w-5 h-5 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className={`text-sm font-medium ${isSelected ? 'text-primary' : ''}`}>
-                    {tag.label}
+                    {t(tag.translationKey)}
                   </span>
                 </button>
               );
@@ -129,7 +131,7 @@ const SleepNotes = () => {
         </Card>
 
         <Card className="p-6 mb-6">
-          <Label className="mb-4 block">Mood Before Sleep</Label>
+          <Label className="mb-4 block">{t('notes.moodBefore')}</Label>
           <div className="flex gap-2 justify-between mb-6">
             {[1, 2, 3, 4, 5].map((mood) => (
               <button
@@ -146,7 +148,7 @@ const SleepNotes = () => {
             ))}
           </div>
 
-          <Label className="mb-4 block">Mood After Waking</Label>
+          <Label className="mb-4 block">{t('notes.moodAfter')}</Label>
           <div className="flex gap-2 justify-between">
             {[1, 2, 3, 4, 5].map((mood) => (
               <button
@@ -165,7 +167,7 @@ const SleepNotes = () => {
         </Card>
 
         <Button onClick={handleSave} size="lg" className="w-full">
-          Save Note
+          {t('notes.saveNote')}
         </Button>
       </div>
     </div>

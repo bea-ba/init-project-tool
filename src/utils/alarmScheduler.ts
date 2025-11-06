@@ -1,5 +1,7 @@
 import { Alarm, SleepSession } from '@/types/sleep';
 import { triggerAlarmNotification } from './notifications';
+import { retryOperation, CircuitBreaker } from './errorRecovery';
+import { toast } from 'sonner';
 
 interface ActiveAlarm {
   alarm: Alarm;
@@ -14,6 +16,7 @@ class AlarmScheduler {
   private alarms: Alarm[] = [];
   private activeSleep: SleepSession | null = null;
   private onAlarmTrigger?: (alarm: Alarm) => void;
+  private notificationCircuitBreaker = new CircuitBreaker(3, 60000);
 
   /**
    * Initialize the alarm scheduler
@@ -198,18 +201,40 @@ class AlarmScheduler {
   }
 
   /**
-   * Trigger an alarm
+   * Trigger an alarm with error recovery
    */
-  private triggerAlarm(alarm: Alarm) {
-    // Trigger browser notification
-    triggerAlarmNotification(alarm);
+  private async triggerAlarm(alarm: Alarm) {
+    try {
+      // Use circuit breaker for notifications to prevent cascading failures
+      await this.notificationCircuitBreaker.execute(async () => {
+        // Retry notification with exponential backoff
+        return retryOperation(async () => {
+          triggerAlarmNotification(alarm);
+          return true;
+        }, { maxRetries: 3, initialDelay: 500 });
+      });
 
-    // Call custom trigger callback if provided
-    if (this.onAlarmTrigger) {
-      this.onAlarmTrigger(alarm);
+      // Call custom trigger callback if provided
+      if (this.onAlarmTrigger) {
+        try {
+          this.onAlarmTrigger(alarm);
+        } catch (error) {
+          console.error('Custom alarm trigger failed:', error);
+          // Don't rethrow - the alarm still triggered
+        }
+      }
+
+      console.log(`Alarm triggered: ${alarm.label} at ${new Date().toLocaleTimeString()}`);
+    } catch (error) {
+      console.error('Failed to trigger alarm notifications:', error);
+      toast.error(`Alarm triggered but notifications failed. Please check your browser settings.`);
+
+      // Still mark alarm as triggered even if notification fails
+      this.activeAlarms.set(alarm.id, {
+        ...this.activeAlarms.get(alarm.id)!,
+        triggeredAt: new Date(),
+      });
     }
-
-    console.log(`Alarm triggered: ${alarm.label} at ${new Date().toLocaleTimeString()}`);
   }
 
   /**

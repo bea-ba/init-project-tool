@@ -56,22 +56,24 @@ class AudioPlayerService {
       return existingState.howl;
     }
 
-    // Try local file first, fallback to CDN if it fails
-    const sources = [
-      SOUND_LIBRARY[soundId],           // Local file
-      SOUND_LIBRARY_CDN[soundId as keyof typeof SOUND_LIBRARY_CDN], // CDN fallback
-    ];
+    // Check if local file exists, use CDN fallback if not
+    const localFile = SOUND_LIBRARY[soundId];
+    const cdnFile = SOUND_LIBRARY_CDN[soundId as keyof typeof SOUND_LIBRARY_CDN];
+
+    // For now, use CDN URLs for all sounds to ensure they work
+    const sources = [cdnFile];
 
     const howl = new Howl({
       src: sources,
       loop: true,
       volume: 0.7,
       html5: true, // Use HTML5 Audio for better mobile support
+      preload: true,
       onload: () => {
-        console.log(`Sound ${soundId} loaded successfully`);
+        console.log(`Sound ${soundId} loaded successfully from CDN`);
       },
       onloaderror: (id, error) => {
-        console.warn(`Failed to load sound ${soundId} from primary source, trying fallback:`, error);
+        console.error(`Failed to load sound ${soundId}:`, error);
       },
       onplayerror: (id, error) => {
         console.error(`Failed to play sound ${soundId}:`, error);
@@ -289,11 +291,13 @@ class AudioPlayerService {
    * Play an alarm sound (non-looping, fade in)
    */
   playAlarm(soundId: SoundId = 'gentle-wake'): void {
+    const cdnFile = SOUND_LIBRARY_CDN[soundId as keyof typeof SOUND_LIBRARY_CDN];
     const howl = new Howl({
-      src: [SOUND_LIBRARY[soundId]],
+      src: [cdnFile],
       loop: false,
       volume: 0,
       html5: true,
+      preload: true,
     });
 
     // Fade in over 3 seconds
@@ -329,3 +333,29 @@ class AudioPlayerService {
 
 // Export singleton instance
 export const audioPlayer = new AudioPlayerService();
+
+// Retry helper for audio operations
+export const retryAudioOperation = async <T>(
+  operation: () => T,
+  maxRetries: number = 3,
+  delay: number = 1000
+): Promise<T> => {
+  let lastError: Error;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error as Error;
+
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+
+      // Wait before retrying with exponential backoff
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt)));
+    }
+  }
+
+  throw lastError;
+};

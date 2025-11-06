@@ -8,16 +8,17 @@ import { useSleep } from '@/contexts/SleepContext';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { SoundId } from '@/utils/audioPlayer';
 import { toast } from 'sonner';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const SOUNDS = [
-  { id: 'rain' as SoundId, name: 'Rain', category: 'nature', icon: Cloud, premium: false },
-  { id: 'ocean' as SoundId, name: 'Ocean Waves', category: 'nature', icon: Waves, premium: false },
-  { id: 'forest' as SoundId, name: 'Forest', category: 'nature', icon: TreePine, premium: false },
-  { id: 'thunderstorm' as SoundId, name: 'Thunderstorm', category: 'nature', icon: Zap, premium: true },
-  { id: 'white-noise' as SoundId, name: 'White Noise', category: 'noise', icon: Wind, premium: false },
-  { id: 'pink-noise' as SoundId, name: 'Pink Noise', category: 'noise', icon: Wind, premium: true },
-  { id: 'piano' as SoundId, name: 'Piano Melody', category: 'classical', icon: Music, premium: true },
-  { id: 'strings' as SoundId, name: 'String Quartet', category: 'classical', icon: Music, premium: true },
+  { id: 'rain' as SoundId, translationKey: 'sounds.rain', category: 'nature', icon: Cloud, premium: false },
+  { id: 'ocean' as SoundId, translationKey: 'sounds.ocean', category: 'nature', icon: Waves, premium: false },
+  { id: 'forest' as SoundId, translationKey: 'sounds.forest', category: 'nature', icon: TreePine, premium: false },
+  { id: 'thunderstorm' as SoundId, translationKey: 'sounds.thunderstorm', category: 'nature', icon: Zap, premium: true },
+  { id: 'white-noise' as SoundId, translationKey: 'sounds.whiteNoise', category: 'noise', icon: Wind, premium: false },
+  { id: 'pink-noise' as SoundId, translationKey: 'sounds.pinkNoise', category: 'noise', icon: Wind, premium: true },
+  { id: 'piano' as SoundId, translationKey: 'sounds.piano', category: 'classical', icon: Music, premium: true },
+  { id: 'strings' as SoundId, translationKey: 'sounds.strings', category: 'classical', icon: Music, premium: true },
 ];
 
 const SLEEP_TIMERS = [5, 10, 15, 30, 45, 60];
@@ -25,6 +26,7 @@ const SLEEP_TIMERS = [5, 10, 15, 30, 45, 60];
 const Sounds = () => {
   const { settings } = useSleep();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const {
     playingSound,
     volume,
@@ -40,8 +42,8 @@ const Sounds = () => {
   // Show toast when timer is set
   useEffect(() => {
     if (timerMinutes) {
-      toast.success(`Sleep timer set for ${timerMinutes} minutes`, {
-        description: 'Sound will gradually fade out',
+      toast.success(t('sounds.timerSet', { minutes: timerMinutes }), {
+        description: t('sounds.timerDescription'),
       });
     }
   }, [timerMinutes]);
@@ -57,7 +59,7 @@ const Sounds = () => {
 
   const handleTimerSelect = (minutes: number) => {
     if (!playingSound) {
-      toast.error('Please play a sound first');
+      toast.error(t('sounds.playSoundFirst'));
       return;
     }
 
@@ -66,16 +68,16 @@ const Sounds = () => {
 
   const handleStopAll = () => {
     stopAll();
-    toast.info('Playback stopped');
+    toast.info(t('sounds.playbackStopped'));
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background pb-20 md:pb-6 overflow-x-hidden">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Relaxation Sounds</h1>
+          <h1 className="text-2xl font-bold">{t('sounds.title')}</h1>
           <Button variant="ghost" onClick={() => navigate('/')} className="md:hidden">
-            Back
+            {t('common.back')}
           </Button>
         </div>
 
@@ -83,9 +85,9 @@ const Sounds = () => {
         {playingSound && (
           <Card className="p-6 mb-8 bg-gradient-to-br from-primary/10 to-secondary/10 animate-fade-in">
             <div className="text-center mb-6">
-              <p className="text-sm text-muted-foreground mb-2">Now Playing</p>
+              <p className="text-sm text-muted-foreground mb-2">{t('sounds.nowPlaying')}</p>
               <h3 className="text-2xl font-bold">
-                {SOUNDS.find(s => s.id === playingSound)?.name}
+                {SOUNDS.find(s => s.id === playingSound)?.translationKey ? t(SOUNDS.find(s => s.id === playingSound)!.translationKey) : ''}
               </h3>
             </div>
 
@@ -108,7 +110,7 @@ const Sounds = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Timer className="w-5 h-5 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Sleep Timer</p>
+                    <p className="text-sm text-muted-foreground">{t('sounds.sleepTimer')}</p>
                   </div>
                   {timerMinutes && (
                     <Button
@@ -117,7 +119,7 @@ const Sounds = () => {
                       onClick={clearTimer}
                       className="text-xs"
                     >
-                      Clear
+                      {t('sounds.clear')}
                     </Button>
                   )}
                 </div>
@@ -138,7 +140,7 @@ const Sounds = () => {
                 </div>
                 {timerMinutes && (
                   <p className="text-xs text-center text-muted-foreground mt-3">
-                    Sound will fade out in {timerMinutes} minutes
+                    {t('sounds.fadeOut', { minutes: timerMinutes })}
                   </p>
                 )}
               </div>
@@ -149,7 +151,7 @@ const Sounds = () => {
                 onClick={handleStopAll}
               >
                 <StopCircle className="w-4 h-4 mr-2" />
-                Stop Playback
+                {t('sounds.stopPlayback')}
               </Button>
             </div>
           </Card>
@@ -159,7 +161,7 @@ const Sounds = () => {
         {!playingSound && (
           <Card className="p-6 mb-8 bg-primary/5 border-primary/20">
             <p className="text-sm text-center text-muted-foreground">
-              Select a sound below to start your relaxation journey
+              {t('sounds.selectSound')}
             </p>
           </Card>
         )}
@@ -167,7 +169,7 @@ const Sounds = () => {
         {/* Sound Categories */}
         <div className="space-y-8">
           <div>
-            <h2 className="text-xl font-semibold mb-4">Nature Sounds</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('sounds.natureSounds')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SOUNDS.filter(s => s.category === 'nature').map((sound) => {
                 const Icon = sound.icon;
@@ -192,9 +194,9 @@ const Sounds = () => {
                           <Play className="w-8 h-8 text-muted-foreground" />
                         )}
                       </div>
-                      <p className="font-semibold mb-1">{sound.name}</p>
+                      <p className="font-semibold mb-1">{t(sound.translationKey)}</p>
                       {sound.premium && !settings.premium && (
-                        <span className="text-xs text-warning">Premium</span>
+                        <span className="text-xs text-warning">{t('premium.title')}</span>
                       )}
                     </button>
                   </Card>
@@ -204,7 +206,7 @@ const Sounds = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-4">White & Pink Noise</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('sounds.whitePinkNoise')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SOUNDS.filter(s => s.category === 'noise').map((sound) => {
                 const Icon = sound.icon;
@@ -229,9 +231,9 @@ const Sounds = () => {
                           <Play className="w-8 h-8 text-muted-foreground" />
                         )}
                       </div>
-                      <p className="font-semibold mb-1">{sound.name}</p>
+                      <p className="font-semibold mb-1">{t(sound.translationKey)}</p>
                       {sound.premium && !settings.premium && (
-                        <span className="text-xs text-warning">Premium</span>
+                        <span className="text-xs text-warning">{t('premium.title')}</span>
                       )}
                     </button>
                   </Card>
@@ -241,7 +243,7 @@ const Sounds = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-4">Classical Music</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('sounds.classicalMusic')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SOUNDS.filter(s => s.category === 'classical').map((sound) => {
                 const Icon = sound.icon;
@@ -266,9 +268,9 @@ const Sounds = () => {
                           <Play className="w-8 h-8 text-muted-foreground" />
                         )}
                       </div>
-                      <p className="font-semibold mb-1">{sound.name}</p>
+                      <p className="font-semibold mb-1">{t(sound.translationKey)}</p>
                       {sound.premium && !settings.premium && (
-                        <span className="text-xs text-warning">Premium</span>
+                        <span className="text-xs text-warning">{t('premium.title')}</span>
                       )}
                     </button>
                   </Card>
@@ -281,12 +283,12 @@ const Sounds = () => {
         {!settings.premium && (
           <Card className="p-6 mt-8 bg-gradient-to-r from-warning/10 to-accent/10">
             <div className="text-center">
-              <h3 className="text-xl font-semibold mb-2">Unlock All Sounds</h3>
+              <h3 className="text-xl font-semibold mb-2">{t('sounds.unlockAllSounds')}</h3>
               <p className="text-muted-foreground mb-4">
-                Get access to all premium sounds and advanced features
+                {t('sounds.unlockAllSoundsDesc')}
               </p>
               <Button onClick={() => navigate('/premium')}>
-                Upgrade to Premium
+                {t('premium.upgrade')}
               </Button>
             </div>
           </Card>

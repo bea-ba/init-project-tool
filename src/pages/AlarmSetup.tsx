@@ -11,12 +11,14 @@ import { AlarmClock, Bell, Vibrate } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateSecureId } from '@/utils/encryption';
 import { sanitizeAlarmLabel } from '@/utils/validation';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const AlarmSetup = () => {
   const { addAlarm } = useSleep();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   const [time, setTime] = useState('07:00');
   const [label, setLabel] = useState('');
@@ -29,20 +31,20 @@ const AlarmSetup = () => {
     // Validate time format
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     if (!timeRegex.test(time)) {
-      toast.error('Invalid time format');
+      toast.error(t('alarms.invalidTimeFormat'));
       return;
     }
 
     // Sanitize and validate label
     const sanitizedLabel = sanitizeAlarmLabel(label);
     if (sanitizedLabel.length > 100) {
-      toast.error('Label is too long. Maximum 100 characters allowed.');
+      toast.error(t('alarms.labelTooLong'));
       return;
     }
 
     // Validate at least one day is selected
     if (!days.some(day => day)) {
-      toast.error('Please select at least one day');
+      toast.error(t('alarms.selectOneDay'));
       return;
     }
 
@@ -63,7 +65,7 @@ const AlarmSetup = () => {
     };
 
     addAlarm(alarm);
-    toast.success('Alarm saved successfully!');
+    toast.success(t('alarms.alarmSaved'));
     navigate('/');
   };
 
@@ -74,12 +76,12 @@ const AlarmSetup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background pb-20 md:pb-6 overflow-x-hidden">
       <div className="w-full px-4 sm:px-6 md:max-w-2xl md:mx-auto">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold truncate pr-2">Smart Alarm</h1>
+          <h1 className="text-xl sm:text-2xl font-bold truncate pr-2">{t('alarms.smartAlarm')}</h1>
           <Button variant="ghost" onClick={() => navigate('/')}>
-            Cancel
+            {t('common.cancel')}
           </Button>
         </div>
 
@@ -96,22 +98,22 @@ const AlarmSetup = () => {
         </Card>
 
         <Card className="p-6 mb-6">
-          <Label htmlFor="label">Alarm Label</Label>
+          <Label htmlFor="label">{t('alarms.label')}</Label>
           <Input
             id="label"
-            placeholder="e.g., Workday, Weekend"
+            placeholder={t('alarms.labelPlaceholder')}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             className="mt-2"
             maxLength={100}
           />
           <p className="text-xs text-muted-foreground mt-2">
-            {label.length}/100 characters
+            {t('alarms.characterCount', { count: label.length })}
           </p>
         </Card>
 
         <Card className="p-6 mb-6">
-          <Label className="mb-4 block">Repeat on</Label>
+          <Label className="mb-4 block">{t('alarms.repeatOn')}</Label>
           <div className="flex gap-2 justify-between">
             {DAYS.map((day, index) => (
               <button
@@ -134,9 +136,9 @@ const AlarmSetup = () => {
             <div className="flex items-center gap-3">
               <Bell className="w-5 h-5 text-primary" />
               <div>
-                <Label>Smart Wake</Label>
+                <Label>{t('alarms.smartWake')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Wake you during light sleep
+                  {t('alarms.smartWakeDesc')}
                 </p>
               </div>
             </div>
@@ -145,7 +147,7 @@ const AlarmSetup = () => {
 
           {smartWake && (
             <div className="mt-4">
-              <Label>Wake Window: {wakeWindow[0]} minutes</Label>
+              <Label>{t('alarms.wakeWindow', { minutes: wakeWindow[0] })}</Label>
               <Slider
                 value={wakeWindow}
                 onValueChange={setWakeWindow}
@@ -155,7 +157,7 @@ const AlarmSetup = () => {
                 className="mt-2"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                Alarm can trigger up to {wakeWindow[0]} minutes before {time}
+                {t('alarms.wakeWindowDesc', { minutes: wakeWindow[0], time })}
               </p>
             </div>
           )}
@@ -165,14 +167,14 @@ const AlarmSetup = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Vibrate className="w-5 h-5 text-primary" />
-              <Label>Vibration</Label>
+              <Label>{t('alarms.vibration')}</Label>
             </div>
             <Switch checked={vibration} onCheckedChange={setVibration} />
           </div>
         </Card>
 
         <Button onClick={handleSave} size="lg" className="w-full">
-          Save Alarm
+          {t('alarms.saveAlarm')}
         </Button>
       </div>
     </div>

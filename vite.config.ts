@@ -24,10 +24,50 @@ export default defineConfig(({ mode }) => {
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        // Simplified chunking
-        manualChunks: undefined,
+        // Smart chunk splitting for better caching and loading
+        manualChunks: {
+          // Core React libraries
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+
+          // UI libraries (Radix UI + shadcn)
+          ui: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-select',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-label',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-visually-hidden',
+          ],
+
+          // Animation library
+          animation: ['framer-motion'],
+
+          // Chart library
+          charts: ['recharts'],
+
+          // Utility libraries
+          utils: [
+            'date-fns',
+            'zod',
+            'crypto-js',
+            'howler',
+            '@tanstack/react-query',
+            'sonner',
+          ],
+
+          // Localization
+          i18n: ['react-i18next'],
+        },
       },
     },
   },

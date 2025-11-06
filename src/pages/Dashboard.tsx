@@ -11,11 +11,13 @@ import { Moon, AlarmClock, Plus, TrendingUp, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Dashboard = () => {
   const { sessions, settings, alarms } = useSleep();
   const navigate = useNavigate();
   const { showOnboarding, completeOnboarding } = useOnboarding();
+  const { t } = useLanguage();
 
   const latestSession = sessions.filter(s => s.endTime).sort((a, b) =>
     new Date(b.endTime!).getTime() - new Date(a.endTime!).getTime()
@@ -43,7 +45,7 @@ const Dashboard = () => {
       <WelcomeModal open={showOnboarding} onComplete={completeOnboarding} />
 
       <PageTransition>
-        <div className="min-h-screen bg-background pb-32 md:pb-6 overflow-x-hidden">
+        <div className="min-h-[100dvh] bg-background pb-20 md:pb-6 overflow-x-hidden">
           <div className="w-full px-4 sm:px-6 md:max-w-6xl md:mx-auto">
             {/* Header */}
             <FadeIn>
@@ -63,8 +65,8 @@ const Dashboard = () => {
                   className="text-muted-foreground"
                 >
                   {latestSession
-                    ? `Last night: ${formatDuration(latestSession.duration)}`
-                    : 'Begin your journey to restorative rest'}
+                    ? t('dashboard.lastNight', { duration: formatDuration(latestSession.duration) })
+                    : t('dashboard.beginJourney')}
                 </motion.p>
               </div>
             </FadeIn>
@@ -84,9 +86,9 @@ const Dashboard = () => {
                   >
                     <Moon className="w-20 h-20 mx-auto mb-6 text-primary opacity-80" />
                   </motion.div>
-                  <h2 className="text-2xl font-bold mb-3">Welcome to Your Sleep Journey</h2>
+                  <h2 className="text-2xl font-bold mb-3">{t('dashboard.welcomeTitle')}</h2>
                   <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                    Start tracking your sleep today to unlock personalized insights, beautiful analytics, and AI-powered recommendations.
+                    {t('dashboard.welcomeDesc')}
                   </p>
                   <Button
                     size="lg"
@@ -94,7 +96,7 @@ const Dashboard = () => {
                     className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
                   >
                     <Moon className="mr-2 h-5 w-5" />
-                    Track Your First Night
+                    {t('dashboard.trackFirstNight')}
                     <Sparkles className="ml-2 h-4 w-4" />
                   </Button>
                 </Card>
@@ -134,7 +136,7 @@ const Dashboard = () => {
               >
                 <Card className="p-6 mb-8">
                   <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    Last Night's Summary
+                    {t('dashboard.lastNightSummary')}
                     <TrendingUp className="h-5 w-5 text-primary" />
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -143,7 +145,7 @@ const Dashboard = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      <p className="text-sm text-muted-foreground">Duration</p>
+                      <p className="text-sm text-muted-foreground">{t('dashboard.duration')}</p>
                       <p className="text-2xl font-bold text-primary">
                         {formatDuration(latestSession.duration)}
                       </p>
@@ -153,7 +155,7 @@ const Dashboard = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.4 }}
                     >
-                      <p className="text-sm text-muted-foreground">Deep Sleep</p>
+                      <p className="text-sm text-muted-foreground">{t('dashboard.deepSleep')}</p>
                       <p className="text-2xl font-bold text-secondary">
                         {formatDuration(latestSession.phases.deep)}
                       </p>
@@ -163,7 +165,7 @@ const Dashboard = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5 }}
                     >
-                      <p className="text-sm text-muted-foreground">REM Sleep</p>
+                      <p className="text-sm text-muted-foreground">{t('dashboard.remSleep')}</p>
                       <p className="text-2xl font-bold text-accent">
                         {formatDuration(latestSession.phases.rem)}
                       </p>
@@ -173,7 +175,7 @@ const Dashboard = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.6 }}
                     >
-                      <p className="text-sm text-muted-foreground">Interruptions</p>
+                      <p className="text-sm text-muted-foreground">{t('dashboard.interruptions')}</p>
                       <p className="text-2xl font-bold">{latestSession.interruptions}</p>
                     </motion.div>
                   </div>
@@ -189,7 +191,7 @@ const Dashboard = () => {
                 transition={{ delay: 0.3 }}
               >
                 <Card className="p-6 mb-8">
-                  <h2 className="text-xl font-semibold mb-4">Last 7 Days</h2>
+                  <h2 className="text-xl font-semibold mb-4">{t('dashboard.last7Days')}</h2>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={last7Days}>
                       <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
@@ -219,7 +221,7 @@ const Dashboard = () => {
                 <Card className="p-6 mb-8 bg-gradient-to-br from-primary/10 to-secondary/10">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Next Alarm</p>
+                      <p className="text-sm text-muted-foreground mb-1">{t('dashboard.nextAlarm')}</p>
                       <p className="text-3xl font-bold">{nextAlarm.time}</p>
                       <p className="text-sm text-muted-foreground mt-1">{nextAlarm.label}</p>
                     </div>
@@ -245,7 +247,7 @@ const Dashboard = () => {
                       className="h-20 text-lg w-full"
                     >
                       <Moon className="w-6 h-6 mr-2" />
-                      Begin Sleep Tracking
+                      {t('dashboard.beginSleepTracking')}
                     </Button>
                   </motion.div>
                 </StaggerItem>
@@ -258,7 +260,7 @@ const Dashboard = () => {
                       className="h-20 text-lg w-full"
                     >
                       <AlarmClock className="w-6 h-6 mr-2" />
-                      Set Alarm
+                      {t('dashboard.setAlarm')}
                     </Button>
                   </motion.div>
                 </StaggerItem>
@@ -271,7 +273,7 @@ const Dashboard = () => {
                       className="h-20 text-lg w-full"
                     >
                       <Plus className="w-6 h-6 mr-2" />
-                      Add Note
+                      {t('dashboard.addNote')}
                     </Button>
                   </motion.div>
                 </StaggerItem>
